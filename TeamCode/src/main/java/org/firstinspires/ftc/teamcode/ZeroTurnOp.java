@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -13,55 +14,82 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "ZeroTurn")
 public class ZeroTurnOp extends OpMode{
 
+    public static final int SQUARE_ROOT = 0, CIRCLE = 1, INVERSE_SQUARE_ROOT = 2, SQUARE_ROOT_AND_THREE_HALVES_ROOT_CIRCLE = 3;
+
     private ElapsedTime runtime = new ElapsedTime();
 
     DcMotor mLeft;
     DcMotor mRight;
+    Servo sBeacon;
+
+    double sPos;
 
     @Override
     public void init() {
         mLeft = hardwareMap.dcMotor.get("LeftDrive");
         mRight = hardwareMap.dcMotor.get("RightDrive");
-        //telemetry.addData("Status", "Initialized");
+        sBeacon = hardwareMap.servo.get("Beacon");
+
+        sPos = 0.8;
 
         mLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
     @Override
     public void init_loop() {
     }
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
     @Override
     public void start() {runtime.reset();}
 
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
+        @Override
     public void loop() {
-        telemetry.addData("Status", "Running: " + runtime.toString());
+            telemetry.addData("Status", "Running: " + runtime.toString());
 
-        mLeft.setPower(((gamepad1.left_stick_y < 0) ? Math.sqrt(Range.clip(-gamepad1.left_stick_y, 0.0d, 1.0d)) : -Math.sqrt(Range.clip(gamepad1.left_stick_y, 0.0d, 1.0d))) / 3);
-        mRight.setPower(((gamepad1.right_stick_y < 0) ? Math.sqrt(Range.clip(-gamepad1.right_stick_y, 0.0d, 1.0d)) : -Math.sqrt(Range.clip(gamepad1.right_stick_y, 0.0d, 1.0d))) / 3);
+            mLeft.setPower(getMappedMotorPower(gamepad1.left_stick_y, SQUARE_ROOT));
+            mRight.setPower(getMappedMotorPower(gamepad1.right_stick_y, SQUARE_ROOT));
 
-        telemetry.addData("Left Motor Power", mLeft.getPower());
-        telemetry.addData("Right Motor Power", mRight.getPower());
-        telemetry.addData("Left Control Stick", -gamepad1.left_stick_y);
-        telemetry.addData("Right Control Stick", -gamepad1.right_stick_y);
+            sPos += (gamepad2.right_trigger-gamepad2.left_trigger)/50;
+            sPos = Range.clip(sPos, 0.7, 0.9);
+            sBeacon.setPosition(sPos);
+            telemetry.addData("Position", sBeacon.getPosition());
+
+            telemetry.addData("Left Motor Power", mLeft.getPower());
+            telemetry.addData("Right Motor Power", mRight.getPower());
+            telemetry.addData("Servo Position", sBeacon.getPosition() * 180);
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
     @Override
     public void stop() {
     }
 
-}
+    private double getMappedMotorPower(double input, int algorithm){
+        switch (algorithm){
+            case SQUARE_ROOT:
+                if (input < 0){
+                    return Math.sqrt(Range.clip(-input, 0.0d, 1.0d));
+                } else {
+                    return -Math.sqrt(Range.clip(input, 0.0d, 1.0d));
+                }
+            case CIRCLE:
+                if (input < 0){
+                    return Math.sqrt(Range.clip(((-input) * 2) - Math.pow(Range.clip(-input, 0.0d, 1.0d), 2), 0.0d, 1.0d));
+                } else {
+                    return -Math.sqrt(Range.clip(((input) * 2) - Math.pow(Range.clip(input, 0.0d, 1.0d), 2), 0.0d, 1.0d));
+                }
+            case INVERSE_SQUARE_ROOT:
+                input = -input;
+                return Range.clip(input * (2 - input), -1.0d, 1.0d);
+            case SQUARE_ROOT_AND_THREE_HALVES_ROOT_CIRCLE:
+                if (input < 0){
+                    return Math.sqrt(Range.clip(Math.sqrt(-input) * Math.sqrt(Range.clip(((input) * 2) - Math.pow(Range.clip(input, 0.0d, 1.0d), 2), 0.0d, 1.0d)), 0.0d, 1.0d));
+                } else {
+                    return -Math.sqrt(Range.clip(Math.sqrt(input) * Math.sqrt(Range.clip(((input) * 2) - Math.pow(Range.clip(input, 0.0d, 1.0d), 2), 0.0d, 1.0d)), 0.0d, 1.0d));
+                }
+            default:
+                return -input;
+            }
+        }
+    }
+
