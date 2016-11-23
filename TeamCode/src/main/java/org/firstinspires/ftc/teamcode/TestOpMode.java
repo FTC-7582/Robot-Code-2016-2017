@@ -12,10 +12,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class TestOpMode extends OpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
+    HardwareZeroTurn hardware;
 
     @Override
     public void init(){
-
+        hardware = new HardwareZeroTurn(hardwareMap);
     }
 
     @Override

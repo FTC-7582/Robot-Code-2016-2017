@@ -18,6 +18,9 @@ public class ZeroTurnOp extends OpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    //Ignore this code for now. It will ultimately be used to make the hardware universal for all OpModes
+    HardwareZeroTurn hardware;
+
     DcMotor mLeft, mRight;
     DcMotor mCollector;
     Servo sBeacon;
@@ -26,6 +29,9 @@ public class ZeroTurnOp extends OpMode{
 
     @Override
     public void init() {
+        //Ignore this for now. See previous related comment
+        hardware = new HardwareZeroTurn(hardwareMap);
+
         mLeft = hardwareMap.dcMotor.get("LeftDrive");
         mRight = hardwareMap.dcMotor.get("RightDrive");
         mCollector = hardwareMap.dcMotor.get("Collector");
