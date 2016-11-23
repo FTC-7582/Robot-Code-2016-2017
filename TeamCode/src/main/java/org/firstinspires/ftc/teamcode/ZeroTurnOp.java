@@ -18,8 +18,8 @@ public class ZeroTurnOp extends OpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    DcMotor mLeft;
-    DcMotor mRight;
+    DcMotor mLeft, mRight;
+    DcMotor mCollector;
     Servo sBeacon;
 
     double sPos;
@@ -28,16 +28,14 @@ public class ZeroTurnOp extends OpMode{
     public void init() {
         mLeft = hardwareMap.dcMotor.get("LeftDrive");
         mRight = hardwareMap.dcMotor.get("RightDrive");
+        mCollector = hardwareMap.dcMotor.get("Collector");
         sBeacon = hardwareMap.servo.get("Beacon");
 
         sPos = 0.8;
 
         mLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    @Override
-    public void init_loop() {
+        mCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -45,23 +43,26 @@ public class ZeroTurnOp extends OpMode{
 
         @Override
     public void loop() {
+            //Prints Runtime
             telemetry.addData("Status", "Running: " + runtime.toString());
 
-            mLeft.setPower(getMappedMotorPower(gamepad1.left_stick_y, SQUARE_ROOT));
-            mRight.setPower(getMappedMotorPower(gamepad1.right_stick_y, SQUARE_ROOT));
+            //Drive
+            mLeft.setPower(getMappedMotorPower(gamepad1.left_stick_y, CIRCLE));
+            mRight.setPower(getMappedMotorPower(gamepad1.right_stick_y, CIRCLE));
 
+            //Collector
+            mCollector.setPower(((gamepad2.a) ? 1 : 0) - ((gamepad2.b) ? 1 : 0));
+
+            //Beacon
             sPos += (gamepad2.right_trigger-gamepad2.left_trigger)/50;
             sPos = Range.clip(sPos, 0.7, 0.9);
             sBeacon.setPosition(sPos);
             telemetry.addData("Position", sBeacon.getPosition());
 
+            //Telemetry
             telemetry.addData("Left Motor Power", mLeft.getPower());
             telemetry.addData("Right Motor Power", mRight.getPower());
             telemetry.addData("Servo Position", sBeacon.getPosition() * 180);
-    }
-
-    @Override
-    public void stop() {
     }
 
     private double getMappedMotorPower(double input, int algorithm){
