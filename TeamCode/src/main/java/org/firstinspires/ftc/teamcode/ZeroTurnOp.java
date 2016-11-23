@@ -14,12 +14,13 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "ZeroTurn")
 public class ZeroTurnOp extends OpMode{
 
-    public static final int SQUARE_ROOT = 0, CIRCLE = 1, INVERSE_SQUARE_ROOT = 2, SQUARE_ROOT_AND_THREE_HALVES_ROOT_CIRCLE = 3;
+    //Important: Code commented with //++ are planned code additions. If you see code like this, please try to acquaint yourself
+    //     with the updated code. Planned code removals will start and end with //--. Code changes prepared in such a manner
+    //     are likely already functional or near functional, but their implementation is being delayed.
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    //Ignore this code for now. It will ultimately be used to make the hardware universal for all OpModes
-    HardwareZeroTurn hardware;
+    //++HardwareZeroTurn hardware;
 
     DcMotor mLeft, mRight;
     DcMotor mCollector;
@@ -29,19 +30,22 @@ public class ZeroTurnOp extends OpMode{
 
     @Override
     public void init() {
-        //Ignore this for now. See previous related comment
-        hardware = new HardwareZeroTurn(hardwareMap);
+        //++hardware = new HardwareZeroTurn(hardwareMap);
 
+        //--
         mLeft = hardwareMap.dcMotor.get("LeftDrive");
         mRight = hardwareMap.dcMotor.get("RightDrive");
         mCollector = hardwareMap.dcMotor.get("Collector");
         sBeacon = hardwareMap.servo.get("Beacon");
+        //--
 
         sPos = 0.8;
 
+        //--
         mLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //--
     }
 
     @Override
@@ -53,50 +57,36 @@ public class ZeroTurnOp extends OpMode{
             telemetry.addData("Status", "Running: " + runtime.toString());
 
             //Drive
-            mLeft.setPower(getMappedMotorPower(gamepad1.left_stick_y, CIRCLE));
-            mRight.setPower(getMappedMotorPower(gamepad1.right_stick_y, CIRCLE));
+            //--
+            mLeft.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.CIRCLE));
+            mRight.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.CIRCLE));
+            //--
+            //++hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.CIRCLE)/3);
+            //++hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.CIRCLE)/3);
 
             //Collector
+            //--
             mCollector.setPower(((gamepad2.a) ? 1 : 0) - ((gamepad2.b) ? 1 : 0));
+            //--
+            //++hardware.collector.setPower(((gamepad2.a) ? 1 : 0) - ((gamepad2.b) ? 1 : 0));
 
             //Beacon
             sPos += (gamepad2.right_trigger-gamepad2.left_trigger)/50;
             sPos = Range.clip(sPos, 0.7, 0.9);
+            //--
             sBeacon.setPosition(sPos);
-            telemetry.addData("Position", sBeacon.getPosition());
+            //--
+            //++hardware.buttonPusher.setPosition(sPos);
 
             //Telemetry
+            //--
             telemetry.addData("Left Motor Power", mLeft.getPower());
             telemetry.addData("Right Motor Power", mRight.getPower());
             telemetry.addData("Servo Position", sBeacon.getPosition() * 180);
+            //--
+            //++telemetry.addData("Left Motor Power", hardware.leftDrive.getPower());
+            //++telemetry.addData("Right Motor Power", hardware.rightDrive.getPower());
+            //++telemetry.addData("Servo Position", hardware.buttonPusher.getPosition() * 180);
     }
-
-    private double getMappedMotorPower(double input, int algorithm){
-        switch (algorithm){
-            case SQUARE_ROOT:
-                if (input < 0){
-                    return Math.sqrt(Range.clip(-input, 0.0d, 1.0d));
-                } else {
-                    return -Math.sqrt(Range.clip(input, 0.0d, 1.0d));
-                }
-            case CIRCLE:
-                if (input < 0){
-                    return Math.sqrt(Range.clip(((-input) * 2) - Math.pow(Range.clip(-input, 0.0d, 1.0d), 2), 0.0d, 1.0d));
-                } else {
-                    return -Math.sqrt(Range.clip(((input) * 2) - Math.pow(Range.clip(input, 0.0d, 1.0d), 2), 0.0d, 1.0d));
-                }
-            case INVERSE_SQUARE_ROOT:
-                input = -input;
-                return Range.clip(input * (2 - input), -1.0d, 1.0d);
-            case SQUARE_ROOT_AND_THREE_HALVES_ROOT_CIRCLE:
-                if (input < 0){
-                    return Math.sqrt(Range.clip(Math.sqrt(-input) * Math.sqrt(Range.clip(((input) * 2) - Math.pow(Range.clip(input, 0.0d, 1.0d), 2), 0.0d, 1.0d)), 0.0d, 1.0d));
-                } else {
-                    return -Math.sqrt(Range.clip(Math.sqrt(input) * Math.sqrt(Range.clip(((input) * 2) - Math.pow(Range.clip(input, 0.0d, 1.0d), 2), 0.0d, 1.0d)), 0.0d, 1.0d));
-                }
-            default:
-                return -input;
-            }
-        }
-    }
+}
 

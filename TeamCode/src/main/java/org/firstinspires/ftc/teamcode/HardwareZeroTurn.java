@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class HardwareZeroTurn {
 
+    //Declaring the variables
     public final DcMotor leftDrive, rightDrive;
     public final DcMotor collector;
     public final Servo buttonPusher;
