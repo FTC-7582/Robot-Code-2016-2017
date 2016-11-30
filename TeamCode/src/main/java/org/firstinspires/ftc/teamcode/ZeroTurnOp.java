@@ -20,7 +20,7 @@ public class ZeroTurnOp extends OpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    //++HardwareZeroTurn hardware;
+    HardwareZeroTurn hardware;
 
     DcMotor mLeft, mRight;
     DcMotor mCollector;
@@ -30,22 +30,9 @@ public class ZeroTurnOp extends OpMode{
 
     @Override
     public void init() {
-        //++hardware = new HardwareZeroTurn(hardwareMap);
-
-        //--
-        mLeft = hardwareMap.dcMotor.get("LeftDrive");
-        mRight = hardwareMap.dcMotor.get("RightDrive");
-        mCollector = hardwareMap.dcMotor.get("Collector");
-        sBeacon = hardwareMap.servo.get("Beacon");
-        //--
+        hardware = new HardwareZeroTurn(hardwareMap);
 
         sPos = 0.8;
-
-        //--
-        mLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        mRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        mCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //--
     }
 
     @Override
@@ -57,36 +44,23 @@ public class ZeroTurnOp extends OpMode{
             telemetry.addData("Status", "Running: " + runtime.toString());
 
             //Drive
-            //--
-            mLeft.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.CIRCLE));
-            mRight.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.CIRCLE));
-            //--
-            //++hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.CIRCLE)/3);
-            //++hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.CIRCLE)/3);
+            hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE)/3);
+            hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE)/3);
 
             //Collector
-            //--
-            mCollector.setPower(((gamepad2.a) ? 1 : 0) - ((gamepad2.b) ? 1 : 0));
-            //--
-            //++hardware.collector.setPower(((gamepad2.a) ? 1 : 0) - ((gamepad2.b) ? 1 : 0));
+            hardware.collector.setPower(((gamepad2.a) ? 1 : 0) - ((gamepad2.b) ? 1 : 0));
 
             //Beacon
             sPos += (gamepad2.right_trigger-gamepad2.left_trigger)/50;
             sPos = Range.clip(sPos, 0.7, 0.9);
-            //--
-            sBeacon.setPosition(sPos);
-            //--
-            //++hardware.buttonPusher.setPosition(sPos);
+            hardware.buttonPusher.setPosition(sPos);
 
             //Telemetry
-            //--
-            telemetry.addData("Left Motor Power", mLeft.getPower());
-            telemetry.addData("Right Motor Power", mRight.getPower());
-            telemetry.addData("Servo Position", sBeacon.getPosition() * 180);
-            //--
-            //++telemetry.addData("Left Motor Power", hardware.leftDrive.getPower());
-            //++telemetry.addData("Right Motor Power", hardware.rightDrive.getPower());
-            //++telemetry.addData("Servo Position", hardware.buttonPusher.getPosition() * 180);
+            telemetry.addData("Left Joystick", -gamepad1.left_stick_y);
+            telemetry.addData("Left Motor Power", hardware.leftDrive.getPower());
+            telemetry.addData("Left Joystick", -gamepad1.right_stick_y);
+            telemetry.addData("Right Motor Power", hardware.rightDrive.getPower());
+            telemetry.addData("Servo Position", hardware.buttonPusher.getPosition() * 180);
     }
 }
 
