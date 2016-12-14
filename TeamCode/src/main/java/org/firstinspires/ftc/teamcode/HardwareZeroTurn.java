@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -9,12 +10,15 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class HardwareZeroTurn {
 
+    //Defining Constants
+    public static final boolean ENCODERS = true, NO_ENCODERS = false;
+
     //Declaring the variables
     public final DcMotor leftDrive, rightDrive;
     public final DcMotor collector;
     public final Servo buttonPusher;
 
-    public HardwareZeroTurn(HardwareMap hardwareMap){
+    public HardwareZeroTurn(HardwareMap hardwareMap, boolean encoders){
         //Assigns the hardware components to their corresponding variables
         leftDrive = hardwareMap.dcMotor.get("LeftDrive");
         rightDrive = hardwareMap.dcMotor.get("RightDrive");
@@ -22,8 +26,13 @@ public class HardwareZeroTurn {
         buttonPusher = hardwareMap.servo.get("Beacon");
 
         //Sets the run mode for the motors
-        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if (encoders) {
+            leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 

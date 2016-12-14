@@ -30,7 +30,7 @@ public class ZeroTurnOp extends OpMode{
 
     @Override
     public void init() {
-        hardware = new HardwareZeroTurn(hardwareMap);
+        hardware = new HardwareZeroTurn(hardwareMap, HardwareZeroTurn.NO_ENCODERS);
 
         sPos = 0.8;
     }
