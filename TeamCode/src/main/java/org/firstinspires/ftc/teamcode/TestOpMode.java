@@ -1,16 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
 /**
  * Created by 970098955 on 11/22/2016.
  */
 
-@TeleOp(name="TestOpMode")
-public class TestOpMode extends OpMode{
+@Autonomous(name="TestOpMode")
+public class TestOpMode extends LinearOpMode7582 {
 
     private ElapsedTime runtime = new ElapsedTime();
     HardwareZeroTurn hardware;
@@ -18,39 +22,37 @@ public class TestOpMode extends OpMode{
     int i = 0;
 
     @Override
-    public void init(){
+    public void runOpMode(){
         hardware = new HardwareZeroTurn(hardwareMap, HardwareZeroTurn.ENCODERS);
-    }
 
-    @Override
-    public void start() {
-        runtime.reset();
-        //hardware.leftDrive.resetDeviceConfigurationForOpMode();
-        //hardware.leftDrive.setTargetPosition(i);
-        //while (hardware.leftDrive.isBusy());
-    }
+        hardware.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        idle();
 
-    @Override
-    public void loop(){
+        hardware.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        hardware.leftDrive.setPower(-gamepad1.left_stick_y);
-        telemetry.addData("Left", hardware.leftDrive.getCurrentPosition());
-        telemetry.addData("Max Speed", hardware.leftDrive.getMaxSpeed());
-        //telemetry.addData("Motor 2", hardware.rightDrive.getCurrentPosition());
+        telemetry.addData("Motor Start",  "Starting at %7d :%7d",
+                hardware.leftDrive.getCurrentPosition(),
+                hardware.rightDrive.getCurrentPosition());
+        telemetry.update();
 
-        //hardware.leftDrive.setTargetPosition(hardware.leftDrive.getTargetPosition() - gamepad1.left_stick_y);
+        waitForStart();
+        telemetry.addData("PosLeft", hardware.leftDrive.getCurrentPosition());
+        telemetry.addData("TarLeft", hardware.leftDrive.getTargetPosition());
+        telemetry.addData("PosRight", hardware.rightDrive.getCurrentPosition());
+        telemetry.addData("TarRight", hardware.rightDrive.getTargetPosition());
+        telemetry.update();
 
-        //hardware.leftDrive.setPower(-gamepad1.left_stick_y);
-        //hardware.rightDrive.setPower(-gamepad1.right_stick_y);
+        Functions.driveRotations(this, 0.33, 5, hardware.leftDrive, hardware.rightDrive);
 
-        /*
-        telemetry.addData("Left Motor", hardware.leftDrive.getPower());
-        telemetry.addData("Left Encoder", hardware.leftDrive.getTargetPosition());
-        telemetry.addData("Left Stick", -gamepad1.left_stick_y);
-        telemetry.addData("Right Motor", hardware.rightDrive.getPower());
-        telemetry.addData("Right Encoder", hardware.rightDrive.getTargetPosition());
-        telemetry.addData("Right Stick", -gamepad1.right_stick_y);
-        */
+        telemetry.addData("PosLeft", hardware.leftDrive.getCurrentPosition());
+        telemetry.addData("TarLeft", hardware.leftDrive.getTargetPosition());
+        telemetry.addData("PosRight", hardware.rightDrive.getCurrentPosition());
+        telemetry.addData("TarRight", hardware.rightDrive.getTargetPosition());
+        telemetry.update();
+
+        while (opModeIsActive()){}
     }
 
 }

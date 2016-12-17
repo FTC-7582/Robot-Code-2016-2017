@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
 /**
  * Created by 970098955 on 11/22/2016.
@@ -48,4 +52,70 @@ public class Functions {
             }
         } else return getMappedMotorPower(input, algorithm);
     }
+
+    public static void moveRotations(double speed, double rotations, DcMotor motor){
+        int target = motor.getCurrentPosition()+((int)(rotations * 1440));
+        motor.setTargetPosition(target);
+
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(Math.abs(speed));
+
+        while (motor.isBusy());
+
+        motor.setPower(0);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public static void moveRotations(double speed, double rotations, DcMotor[] motors){
+        boolean motorBusy = false;
+
+        for (DcMotor motor : motors) {
+
+            int target = motor.getCurrentPosition() + ((int) (rotations * 1440));
+            motor.setTargetPosition(target);
+
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motor.setPower(Math.abs(speed));
+        }
+
+        do {
+            motorBusy = false;
+            for (DcMotor motor : motors)
+                if (motor.isBusy()) {
+                    motorBusy = true;
+                    break;
+                }
+        } while (motorBusy);
+
+        for (DcMotor motor : motors) {
+            motor.setPower(0);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+
+    public static void driveRotations(LinearOpMode7582 opMode, double speed, double rotations, DcMotor left, DcMotor right){
+        int leftTarget = left.getCurrentPosition()+((int)(rotations * 1440));
+        int rightTarget = left.getCurrentPosition()-((int)(rotations * 1440));
+        left.setTargetPosition(leftTarget);
+        right.setTargetPosition(rightTarget);
+
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left.setPower(Math.abs(speed));
+        right.setPower(Math.abs(speed));
+
+        while (opMode.opModeIsActive() && (left.isBusy() || right.isBusy())){
+            opMode.telemetry.addData("PosLeft", opMode.hardware.leftDrive.getCurrentPosition());
+            opMode.telemetry.addData("TarLeft", opMode.hardware.leftDrive.getTargetPosition());
+            opMode.telemetry.addData("PosRight", opMode.hardware.rightDrive.getCurrentPosition());
+            opMode.telemetry.addData("TarRight", opMode.hardware.rightDrive.getTargetPosition());
+            opMode.telemetry.update();
+        }
+
+        left.setPower(0);
+        right.setPower(0);
+        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
 }
