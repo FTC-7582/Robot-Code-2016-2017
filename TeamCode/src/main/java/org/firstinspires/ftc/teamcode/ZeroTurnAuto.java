@@ -7,23 +7,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
 /**
  * Created by 970098955 on 11/22/2016.
  */
 
-@Autonomous(name="TestOpMode")
-public class TestOpMode extends LinearOpMode7582 {
-
-    private ElapsedTime runtime = new ElapsedTime();
-    HardwareZeroTurn hardware;
-
-    int i = 0;
+@Autonomous(name="ZeroTurnAuto")
+public class ZeroTurnAuto extends LinearOpMode7582 {
 
     @Override
     public void runOpMode(){
-        hardware = new HardwareZeroTurn(hardwareMap, HardwareZeroTurn.ENCODERS);
+        super.runOpMode();
 
         hardware.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -38,21 +34,17 @@ public class TestOpMode extends LinearOpMode7582 {
         telemetry.update();
 
         waitForStart();
-        telemetry.addData("PosLeft", hardware.leftDrive.getCurrentPosition());
-        telemetry.addData("TarLeft", hardware.leftDrive.getTargetPosition());
-        telemetry.addData("PosRight", hardware.rightDrive.getCurrentPosition());
-        telemetry.addData("TarRight", hardware.rightDrive.getTargetPosition());
-        telemetry.update();
+        Functions.driveDistance(this, 0.1, 3.0, Functions.Units.FEET, hardware.leftDrive, hardware.rightDrive);
+        //Functions.turn(this, 0.33, 180, hardware.leftDrive, hardware.rightDrive);
+        //Functions.turn(this, 0.33, -180, hardware.leftDrive, hardware.rightDrive);
 
-        Functions.driveRotations(this, 0.33, 5, hardware.leftDrive, hardware.rightDrive);
-
-        telemetry.addData("PosLeft", hardware.leftDrive.getCurrentPosition());
-        telemetry.addData("TarLeft", hardware.leftDrive.getTargetPosition());
-        telemetry.addData("PosRight", hardware.rightDrive.getCurrentPosition());
-        telemetry.addData("TarRight", hardware.rightDrive.getTargetPosition());
-        telemetry.update();
 
         while (opModeIsActive()){}
+    }
+
+    void pressButton(){
+        if (hardware.color.red() < 255 && hardware.color.red()> 127) hardware.buttonPusher.setPosition(0.9);
+        else if (hardware.color.blue() <255 && hardware.color.blue() > 127) hardware.buttonPusher.setPosition(0.7);
     }
 
 }

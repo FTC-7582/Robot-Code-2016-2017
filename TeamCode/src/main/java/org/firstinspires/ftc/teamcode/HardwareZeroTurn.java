@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Created by 970098955 on 10/29/2016.
@@ -18,6 +21,9 @@ public class HardwareZeroTurn {
     public final DcMotor leftDrive, rightDrive;
     public final DcMotor collector;
     public final Servo buttonPusher;
+    public final TouchSensor touch;
+    public final ColorSensor color;
+    public final LightSensor light;
 
     public HardwareZeroTurn(HardwareMap hardwareMap, boolean encoders){
         //Assigns the hardware components to their corresponding variables
@@ -25,6 +31,11 @@ public class HardwareZeroTurn {
         rightDrive = hardwareMap.dcMotor.get("RightDrive");
         collector = hardwareMap.dcMotor.get("Collector");
         buttonPusher = hardwareMap.servo.get("Beacon");
+        touch = hardwareMap.touchSensor.get("Touch");
+        color = hardwareMap.colorSensor.get("Color");
+        light = hardwareMap.lightSensor.get("Light");
+
+
 
         //Sets the run mode for the motors
         if (encoders) {

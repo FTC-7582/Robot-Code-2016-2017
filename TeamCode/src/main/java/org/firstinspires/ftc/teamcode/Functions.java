@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.provider.ContactsContract;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
@@ -54,7 +57,7 @@ public class Functions {
     }
 
     public static void moveRotations(double speed, double rotations, DcMotor motor){
-        int target = motor.getCurrentPosition()+((int)(rotations * 1440));
+        int target = motor.getCurrentPosition()+((int)(rotations * 1400));
         motor.setTargetPosition(target);
 
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -71,7 +74,7 @@ public class Functions {
 
         for (DcMotor motor : motors) {
 
-            int target = motor.getCurrentPosition() + ((int) (rotations * 1440));
+            int target = motor.getCurrentPosition() + ((int) (rotations * 1400));
             motor.setTargetPosition(target);
 
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -94,17 +97,23 @@ public class Functions {
     }
 
     public static void driveRotations(LinearOpMode7582 opMode, double speed, double rotations, DcMotor left, DcMotor right){
-        int leftTarget = left.getCurrentPosition()+((int)(rotations * 1440));
-        int rightTarget = left.getCurrentPosition()-((int)(rotations * 1440));
+        int leftTarget = left.getCurrentPosition()+((int)(rotations * 1400));
+        int rightTarget = left.getCurrentPosition()-((int)(rotations * 1400));
+        double millis;
         left.setTargetPosition(leftTarget);
         right.setTargetPosition(rightTarget);
 
         left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left.setPower(Math.abs(speed));
+        opMode.idle();
+        opMode.runtime.reset();
+
+        millis = opMode.runtime.milliseconds();
         right.setPower(Math.abs(speed));
+        left.setPower(Math.abs(speed));
 
         while (opMode.opModeIsActive() && (left.isBusy() || right.isBusy())){
+            opMode.telemetry.addData("Time", millis);
             opMode.telemetry.addData("PosLeft", opMode.hardware.leftDrive.getCurrentPosition());
             opMode.telemetry.addData("TarLeft", opMode.hardware.leftDrive.getTargetPosition());
             opMode.telemetry.addData("PosRight", opMode.hardware.rightDrive.getCurrentPosition());
@@ -116,6 +125,68 @@ public class Functions {
         right.setPower(0);
         left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public static void turn(LinearOpMode7582 opMode, double speed, double degrees, DcMotor left, DcMotor right){
+
+        int target = ((int)((6000*1.4875)*(degrees/360)));
+        opMode.telemetry.addData("TTarget", target);
+        opMode.telemetry.update();
+        left.setTargetPosition(left.getCurrentPosition()+target);
+        right.setTargetPosition(right.getCurrentPosition()+target);
+
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        opMode.idle();
+        left.setPower(Math.abs(speed));
+        right.setPower(Math.abs(speed));
+
+        while (opMode.opModeIsActive() && (left.isBusy() || right.isBusy()));
+
+        left.setPower(0);
+        right.setPower(0);
+        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public static void driveInches(LinearOpMode7582 opMode, double speed, double distance, DcMotor left, DcMotor right) {
+        driveRotations(opMode, speed, distance/(5*Math.PI), left, right);
+    }
+
+    public static void driveDistance(LinearOpMode7582 opMode, double speed, double distance, Units unit, DcMotor left, DcMotor right) {
+        double divisor;
+        switch (unit){
+            case INCHES:
+                divisor = 5*Math.PI;
+                break;
+            case CENTIMETERS:
+                divisor = 2.54*5*Math.PI;
+                break;
+            case FEET:
+                divisor = (5*Math.PI)/12;
+                break;
+            case METERS:
+                divisor = 0.0254*2.5*Math.PI;
+                break;
+            case ROTATIONS:
+                divisor = 1;
+                break;
+            default:
+                divisor = 1;
+                break;
+        }
+        driveRotations(opMode, speed, distance/divisor, left, right);
+    }
+
+    public enum Units{
+        INCHES, CENTIMETERS, FEET, METERS, ROTATIONS
+    }
+
+    public static void wait(LinearOpMode7582 opMode, double seconds){
+        double start = opMode.runtime.seconds();
+        while (opMode.opModeIsActive() && (opMode.runtime.seconds()-start <= seconds));
     }
 
 }

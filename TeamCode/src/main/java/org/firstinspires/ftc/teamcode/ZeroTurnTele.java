@@ -14,26 +14,21 @@ import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
  */
 
 @TeleOp(name = "ZeroTurn")
-public class ZeroTurnOp extends IterativeOpMode7582{
+public class ZeroTurnTele extends IterativeOpMode7582{
 
     //Important: Code commented with //++ are planned code additions. If you see code like this, please try to acquaint yourself
     //     with the updated code. Planned code removals will start and end with //--. Code changes prepared in such a manner
     //     are likely already functional or near functional, but their implementation is being delayed.
 
-    private ElapsedTime runtime = new ElapsedTime();
-
     double sPos;
 
     @Override
     public void init() {
-
+        super.init();
         sPos = 0.8;
     }
 
     @Override
-    public void start() {runtime.reset();}
-
-        @Override
     public void loop() {
             //Prints Runtime
             telemetry.addData("Status", "Running: " + runtime.toString());
