@@ -20,7 +20,7 @@ public class HardwareZeroTurn {
     //Declaring the variables
     public final DcMotor leftDrive, rightDrive;
     public final DcMotor collector;
-    public final Servo buttonPusher;
+    public final Servo buttonPusher, ballBlocker;
     public final TouchSensor touch;
     public final ColorSensor color;
     public final LightSensor light;
@@ -31,6 +31,7 @@ public class HardwareZeroTurn {
         rightDrive = hardwareMap.dcMotor.get("RightDrive");
         collector = hardwareMap.dcMotor.get("Collector");
         buttonPusher = hardwareMap.servo.get("Beacon");
+        ballBlocker = hardwareMap.servo.get("Blocker");
         touch = hardwareMap.touchSensor.get("Touch");
         color = hardwareMap.colorSensor.get("Color");
         light = hardwareMap.lightSensor.get("Light");

@@ -96,6 +96,26 @@ public class Functions {
         }
     }
 
+    public static void driveRotations2(LinearOpMode7582 opMode, double speed, double rotations, DcMotor left, DcMotor right){
+        int target = left.getCurrentPosition()+((int)(rotations * 1440));
+
+        opMode.runtime.reset();
+
+        left.setPower(speed);
+        right.setPower(-speed);
+
+        while (left.getCurrentPosition() < (target - 10)){
+            opMode.telemetry.addData("Time", opMode.runtime.seconds());
+            opMode.telemetry.addData("Target", target);
+            opMode.telemetry.addData("PosLeft", opMode.hardware.leftDrive.getCurrentPosition());
+            opMode.telemetry.addData("PosRight", opMode.hardware.rightDrive.getCurrentPosition());
+            opMode.telemetry.update();
+        }
+
+        left.setPower(0);
+        right.setPower(0);
+    }
+
     public static void driveRotations(LinearOpMode7582 opMode, double speed, double rotations, DcMotor left, DcMotor right){
         int leftTarget = left.getCurrentPosition()+((int)(rotations * 1400));
         int rightTarget = left.getCurrentPosition()-((int)(rotations * 1400));
@@ -128,6 +148,19 @@ public class Functions {
 
     }
 
+    public static void turn2(LinearOpMode7582 opMode, double speed, double degrees, DcMotor left, DcMotor right){
+        int target = left.getCurrentPosition() + ((int)((6000*1.4875)*(degrees/360)));
+
+        left.setPower(speed);
+        right.setPower(speed);
+
+        while (left.getCurrentPosition() < (target-10));
+
+        left.setPower(0);
+        right.setPower(0);
+
+    }
+
     public static void turn(LinearOpMode7582 opMode, double speed, double degrees, DcMotor left, DcMotor right){
 
         int target = ((int)((6000*1.4875)*(degrees/360)));
@@ -152,7 +185,7 @@ public class Functions {
     }
 
     public static void driveInches(LinearOpMode7582 opMode, double speed, double distance, DcMotor left, DcMotor right) {
-        driveRotations(opMode, speed, distance/(5*Math.PI), left, right);
+        driveRotations2(opMode, speed, distance/(5*Math.PI), left, right);
     }
 
     public static void driveDistance(LinearOpMode7582 opMode, double speed, double distance, Units unit, DcMotor left, DcMotor right) {
@@ -177,7 +210,7 @@ public class Functions {
                 divisor = 1;
                 break;
         }
-        driveRotations(opMode, speed, distance/divisor, left, right);
+        driveRotations2(opMode, speed, distance/divisor, left, right);
     }
 
     public enum Units{
@@ -187,6 +220,18 @@ public class Functions {
     public static void wait(LinearOpMode7582 opMode, double seconds){
         double start = opMode.runtime.seconds();
         while (opMode.opModeIsActive() && (opMode.runtime.seconds()-start <= seconds));
+    }
+
+    public static double clamp(double value, double max, double min){
+        return (value > max) ? max : ((value < min) ? min : value);
+    }
+
+    public static double clampMax(double value, double max){
+        return (value > max) ? max : value;
+    }
+
+    public static double clampMin(double value, double min){
+        return (value < min) ? min : value;
     }
 
 }

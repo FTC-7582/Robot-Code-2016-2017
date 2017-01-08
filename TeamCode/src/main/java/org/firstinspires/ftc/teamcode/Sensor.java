@@ -13,6 +13,8 @@ public class Sensor extends IterativeOpMode7582{
     @Override
     public void init() {
         super.init();
+        hardware.ballBlocker.setPosition(0.71);
+        hardware.buttonPusher.setPosition(0.8);
         hardware.color.enableLed(true);
         hardware.light.enableLed(false);
     }

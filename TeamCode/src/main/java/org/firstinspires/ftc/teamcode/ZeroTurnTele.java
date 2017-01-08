@@ -26,22 +26,40 @@ public class ZeroTurnTele extends IterativeOpMode7582{
     public void init() {
         super.init();
         sPos = 0.8;
+        hardware.buttonPusher.setPosition(sPos);
+        hardware.ballBlocker.setPosition(0.7);
     }
 
     @Override
     public void loop() {
+        try {
             //Prints Runtime
             telemetry.addData("Status", "Running: " + runtime.toString());
 
             //Drive
-            hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE)/3);
-            hardware.rightDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE)/3);
+            hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+            hardware.rightDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
 
             //Collector
-            hardware.collector.setPower(((gamepad2.b) ? 1 : 0) - ((gamepad2.a) ? 1 : 0));
+            if (gamepad2.a) {
+                hardware.collector.setPower(Functions.clampMax(hardware.collector.getPower() + 0.05, 1));
+            } else if (gamepad2.y) {
+                hardware.collector.setPower(Functions.clampMin(hardware.collector.getPower() - 0.05, -1));
+            } else {
+                if (hardware.collector.getPower() > 0) {
+                    hardware.collector.setPower(Functions.clampMin(hardware.collector.getPower() - 0.015, 0));
+                } else if (hardware.collector.getPower() < 0) {
+                    hardware.collector.setPower(Functions.clampMax(hardware.collector.getPower() + 0.015, 0));
+                }
+            }
+
+
+            //Ball Blocker
+            if (hardware.collector.getPower() == 1 || hardware.collector.getPower() == -1) hardware.ballBlocker.setPosition(0.25);
+            else hardware.ballBlocker.setPosition(0.7);
 
             //Beacon
-            sPos += (gamepad2.right_trigger-gamepad2.left_trigger)/50;
+            sPos += (gamepad2.right_trigger - gamepad2.left_trigger) / 50;
             sPos = Range.clip(sPos, 0.7, 0.9);
             hardware.buttonPusher.setPosition(sPos);
 
@@ -51,6 +69,7 @@ public class ZeroTurnTele extends IterativeOpMode7582{
             telemetry.addData("Right Joystick", -gamepad1.right_stick_y);
             telemetry.addData("Right Motor Power", -hardware.rightDrive.getPower());
             telemetry.addData("Servo Position", hardware.buttonPusher.getPosition() * 180);
+        } catch (Exception e){}
     }
 }
 
