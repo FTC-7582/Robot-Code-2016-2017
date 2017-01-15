@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 public class Functions {
 
     public static final int SQUARE_ROOT = 0, CIRCLE = 1, REVERSE_SQUARE_ROOT = 2, DAMPENED_CIRCLE = 3;
+    public static final boolean RIGHT = true, LEFT = false;
 
     public static double getMappedMotorPower(double input, int algorithm){
         //Graphical view of algorithms: https://www.desmos.com/calculator/ync9ayg4dx
@@ -97,11 +98,11 @@ public class Functions {
     }
 
     public static void driveRotations2(LinearOpMode7582 opMode, double speed, double rotations, DcMotor left, DcMotor right){
-        int target = left.getCurrentPosition()+((int)(rotations * 1440));
+        int target = left.getCurrentPosition()+((int)((rotations*0.74) * 1440));
 
         opMode.runtime.reset();
 
-        left.setPower(speed);
+        left.setPower(speed*0.97);
         right.setPower(-speed);
 
         while (left.getCurrentPosition() < (target - 10)){

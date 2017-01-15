@@ -27,7 +27,7 @@ public class ZeroTurnTele extends IterativeOpMode7582{
         super.init();
         sPos = 0.8;
         hardware.buttonPusher.setPosition(sPos);
-        hardware.ballBlocker.setPosition(0.7);
+        hardware.ballBlocker.setPosition(0.5);
     }
 
     @Override
@@ -55,8 +55,8 @@ public class ZeroTurnTele extends IterativeOpMode7582{
 
 
             //Ball Blocker
-            if (hardware.collector.getPower() == 1 || hardware.collector.getPower() == -1) hardware.ballBlocker.setPosition(0.25);
-            else hardware.ballBlocker.setPosition(0.7);
+            if (hardware.collector.getPower() == 1 || hardware.collector.getPower() == -1) hardware.ballBlocker.setPosition(0.5);
+            else hardware.ballBlocker.setPosition(0.1);
 
             //Beacon
             sPos += (gamepad2.right_trigger - gamepad2.left_trigger) / 50;

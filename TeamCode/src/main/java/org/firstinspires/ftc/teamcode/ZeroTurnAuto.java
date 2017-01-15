@@ -34,8 +34,8 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
         telemetry.update();
 
         waitForStart();
-        Functions.driveDistance(this, 0.33, 3.0, Functions.Units.FEET, hardware.leftDrive, hardware.rightDrive);
-        //Functions.turn(this, 0.33, 180, hardware.leftDrive, hardware.rightDrive);
+        //Functions.driveDistance(this, 0.33, 3.0, Functions.Units.FEET, hardware.leftDrive, hardware.rightDrive);
+        Functions.turn2(this, 0.33, 180, hardware.leftDrive, hardware.rightDrive);
         //Functions.turn(this, 0.33, -180, hardware.leftDrive, hardware.rightDrive);
 
 
