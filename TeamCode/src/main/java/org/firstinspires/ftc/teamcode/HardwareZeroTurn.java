@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
+import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,9 +22,9 @@ public class HardwareZeroTurn {
     public final DcMotor leftDrive, rightDrive;
     public final DcMotor collector;
     public final Servo buttonPusher, ballBlocker;
-    public final TouchSensor touch;
-    public final ColorSensor color;
-    public final LightSensor light;
+    //public final AccelerationSensor accel;
+    //public final ColorSensor color;
+    //public final LightSensor light;
 
     public HardwareZeroTurn(HardwareMap hardwareMap, boolean encoders){
         //Assigns the hardware components to their corresponding variables
@@ -32,9 +33,9 @@ public class HardwareZeroTurn {
         collector = hardwareMap.dcMotor.get("Collector");
         buttonPusher = hardwareMap.servo.get("Beacon");
         ballBlocker = hardwareMap.servo.get("Blocker");
-        touch = hardwareMap.touchSensor.get("Touch");
-        color = hardwareMap.colorSensor.get("Color");
-        light = hardwareMap.lightSensor.get("Light");
+        //accel = hardwareMap.accelerationSensor.get("Accel");
+        //color = hardwareMap.colorSensor.get("Color");
+        //light = hardwareMap.lightSensor.get("Light");
 
 
 

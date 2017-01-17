@@ -21,13 +21,14 @@ public class ZeroTurnTele extends IterativeOpMode7582{
     //     are likely already functional or near functional, but their implementation is being delayed.
 
     double sPos;
+    boolean prevFP = false, reverse = false, prevRP = false;
 
     @Override
     public void init() {
         super.init();
         sPos = 0.8;
         hardware.buttonPusher.setPosition(sPos);
-        hardware.ballBlocker.setPosition(0.5);
+        hardware.ballBlocker.setPosition(0.175);
     }
 
     @Override
@@ -36,9 +37,31 @@ public class ZeroTurnTele extends IterativeOpMode7582{
             //Prints Runtime
             telemetry.addData("Status", "Running: " + runtime.toString());
 
+            if (gamepad1.left_bumper && !prevRP){
+                reverse = !reverse;
+                prevRP = true;
+            } else if (!gamepad1.left_bumper) prevRP = false;
+
+            telemetry.addData("Direction", (reverse) ? "Reverse" : "Forward");
+
             //Drive
-            hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE) / 3);
-            hardware.rightDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+            if (reverse) {
+                if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
+                    hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE));
+                    hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE));
+                } else {
+                    hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+                    hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+                }
+            } else {
+                if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
+                    hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE));
+                    hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE));
+                } else {
+                    hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+                    hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+                }
+            }
 
             //Collector
             if (gamepad2.a) {
@@ -55,8 +78,21 @@ public class ZeroTurnTele extends IterativeOpMode7582{
 
 
             //Ball Blocker
-            if (hardware.collector.getPower() == 1 || hardware.collector.getPower() == -1) hardware.ballBlocker.setPosition(0.5);
-            else hardware.ballBlocker.setPosition(0.1);
+            if (hardware.collector.getPower() == -1){
+                if (!prevFP){
+                    runtime.reset();
+                    prevFP = !prevFP;
+                } else {
+                    if (runtime.seconds() < 1);
+                    else hardware.ballBlocker.setPosition(0.5);
+                }
+            }
+            else if (hardware.collector.getPower() == 1){
+                hardware.ballBlocker.setPosition(0.5);
+            } else {
+                hardware.ballBlocker.setPosition(0.175);
+                prevFP = false;
+            }
 
             //Beacon
             sPos += (gamepad2.right_trigger - gamepad2.left_trigger) / 50;

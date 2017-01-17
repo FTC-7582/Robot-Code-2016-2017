@@ -169,7 +169,7 @@ public class Robot_Navigation
 
         // Get your own Vuforia key at  https://developer.vuforia.com/license-manager
         // and paste it here...
-        parameters.vuforiaLicenseKey = "Afbu2Uv/////AAAAGVouNdSAD0P8la+sq37vCdQ6uLVH8NWrBLnfZ1R5rObJQpVVHJzqvIgMZO5gTqXG6DYJZcgwtSVZXU2g20FAJobxCog9Wc5vtqgJJmrsJ0NOABRbi9vy4Y9IzBVfaDoRsQTmjxxFf62Z9slttsb44KopGpVGTQ83iHnTo/wDvnZBWRhmckG6IKuqkbRYCFD+w1hHvVLuDoIYLgfpa1Rw1Pc7rszP/CDzUfeO9KwodFpEsfZHIZI8KHIYzfRIOhg1Tg0T4eRsLCO8s9vfZd6vfTuUA/sZkID3N7BsrlLaL6vUqheGPvsbPuQQsMqgPNYTqbhvv3KI/SR5WxUaccuVHnpVMhAjkdpruWVliCCZqp1t";
+        parameters.vuforiaLicenseKey = "AdI6xXD/////AAAAGale/Rmhs0Cgo5f+Y1lRSe5hB/PPS3LujHQ/M1f7IF3TKdC7EQmCd8ZlEhlx3fHx+TOdrdqfUhhAGMbiWwmpXim38kT7FmSn2VYN64Up+MoUCff1yA4ELM5HyBdBvBikKlV4Tx/m70Z7sCi01KQxHigu4Mbwi/TyY2dDlYl2SsL2D4v/ALcKRrMkO2oTlebiOe1okTIRF0djGXQi8oHAaAAM7MgW9IswaZhuTmWshV+wCnhil/e+U3GbMWbvXWrYY1hzL+8rxyoQqGizuJci4Tlwys0v5Jh9pnn22CJN/sh92xl635am1E9Nii67JganqP+YrpGYj8ggmijSSTyHb8QK1D9LLF3kMuLPzsSo8epY";
 
         parameters.cameraDirection = CAMERA_CHOICE;
         parameters.useExtendedTracking = false;
