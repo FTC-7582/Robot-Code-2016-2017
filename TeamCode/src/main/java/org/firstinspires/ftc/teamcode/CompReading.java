@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
@@ -19,6 +20,9 @@ import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 public class CompReading {
 
     private float yaw, pitch, roll;
+    private boolean stopAtHeading = false, maintainHeading = false;
+    private float heading, speed;
+    private DcMotor[] motors = new DcMotor[2];
 
     OpMode opMode;
 
@@ -49,6 +53,47 @@ public class CompReading {
     public float getPitch() {return pitch;}
     public float getRoll() {return roll;}
 
+    public void setHeading(float heading){
+        this.heading = heading;
+    }
+
+    public void activateStopAtTarget(){
+        stopAtHeading = true;
+    }
+
+    public void deactivateStopAtTarget(){
+        stopAtHeading = false;
+        for (DcMotor motor : motors) motor.setPower(0);
+        motors = new DcMotor[] {};
+    }
+
+    public boolean areMotorsBusy(){
+        return stopAtHeading || maintainHeading;
+    }
+
+    public void runToHeading(float heading, DcMotor[] motors){
+        this.motors = motors;
+        setHeading(heading);
+        activateStopAtTarget();
+    }
+
+    public void beginHeadingMaintainence(){
+        maintainHeading = true;
+    }
+
+    public void driveWithMaintainedHeading(float speed, DcMotor[] motors){
+        this.motors = motors;
+        this.speed = speed;
+        this.heading = yaw;
+        beginHeadingMaintainence();
+    }
+
+    public void stopHeadingMaintainence(){
+        maintainHeading = false;
+        for (DcMotor motor : motors) motor.setPower(0);
+        motors =  new DcMotor[] {};
+    }
+
     private SensorEventListener orientationListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -58,6 +103,31 @@ public class CompReading {
                 yaw = event.values[0];
                 pitch = event.values[1];
                 roll = event.values[2];
+
+                if (stopAtHeading){
+                    if (event.values[0] > heading + 2 || event.values[0] < heading - 2){
+                        for (DcMotor motor : motors) motor.setPower(0);
+                        deactivateStopAtTarget();
+                        motors = new DcMotor[] {};
+                    }
+                } else if (maintainHeading){
+                    if (motors.length > 2)  throw new IllegalArgumentException("There cannot be more than two drive motors on the robot. Please only pass an array with two motors");
+                    float deltaHeading = (event.values[0]-heading);
+                    //This turns a robot to a specific absolute heading. This has no basis on the robot's starting rotation
+                    if (deltaHeading > 2 || deltaHeading < -2) {
+                        if (deltaHeading > 180 || deltaHeading < 0) {
+                            motors[0].setPower(speed);
+                            motors[1].setPower(speed*0.75);
+                        } else if (deltaHeading <= 180 && deltaHeading >= 0) {
+                            motors[0].setPower(speed*0.75);
+                            motors[1].setPower(speed);
+                        }
+                    } else {
+                        for (DcMotor motor : motors){
+                            motor.setPower(speed);
+                        }
+                    }
+                }
 
             } catch (Exception e) {
                 opMode.telemetry.addData("Exception", e.toString());

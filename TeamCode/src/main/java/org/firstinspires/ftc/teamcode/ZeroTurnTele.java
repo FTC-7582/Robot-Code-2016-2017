@@ -46,7 +46,7 @@ public class ZeroTurnTele extends IterativeOpMode7582{
 
             //Drive
             if (reverse) {
-                if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
+                if ((-gamepad1.left_stick_y >= 0 && -gamepad1.right_stick_y <= 0) || (-gamepad1.left_stick_y <= 0 && -gamepad1.right_stick_y >= 0)) {
                     hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE));
                     hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE));
                 } else {
@@ -54,12 +54,12 @@ public class ZeroTurnTele extends IterativeOpMode7582{
                     hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
                 }
             } else {
-                if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
-                    hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE));
-                    hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE));
+                if ((-gamepad1.left_stick_y >= 0 && -gamepad1.right_stick_y <= 0) || (-gamepad1.left_stick_y <= 0 && -gamepad1.right_stick_y >= 0)) {
+                    hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE));
+                    hardware.rightDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE));
                 } else {
-                    hardware.leftDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE) / 3);
-                    hardware.rightDrive.setPower(Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+                    hardware.leftDrive.setPower(Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.DAMPENED_CIRCLE) / 3);
+                    hardware.rightDrive.setPower(-Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.DAMPENED_CIRCLE) / 3);
                 }
             }
 
@@ -93,6 +93,7 @@ public class ZeroTurnTele extends IterativeOpMode7582{
                 hardware.ballBlocker.setPosition(0.175);
                 prevFP = false;
             }
+            telemetry.addData("Servo Pos", hardware.ballBlocker.getPosition());
 
             //Beacon
             sPos += (gamepad2.right_trigger - gamepad2.left_trigger) / 50;

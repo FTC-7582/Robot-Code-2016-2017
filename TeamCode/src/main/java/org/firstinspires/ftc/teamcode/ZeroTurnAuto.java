@@ -34,20 +34,27 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
         compass.init();
         startHeading = compass.getYaw();
 
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
+        hardware.ballBlocker.setPosition(0.175);
 
-        waitForStart();
+        while (!opModeIsActive()){
+            telemetry.addLine("Waiting for start");
+            telemetry.addData("Heading", compass.getYaw());
+            telemetry.update();
+        }
 
-        driveDistance(this, 0.33, 3.0, Functions.Units.FEET, hardware.leftDrive, hardware.rightDrive);
+        driveDistance(0.33, 3.0, Functions.Units.FEET, hardware.leftDrive, hardware.rightDrive);
         turnToRelativeHeading(90);
+        //Functions.wait(this, 1);
+        //turnToRelativeHeading(270);
+        //Functions.wait(this, 1);
+        //turnToRelativeHeading(360);
 
 
         //Functions.turn2(this, 0.33, 180, hardware.leftDrive, hardware.rightDrive);
         //Functions.turn(this, 0.33, -180, hardware.leftDrive, hardware.rightDrive);
 
 
-        while (opModeIsActive()){}
+        while (opModeIsActive()){updateTelemetry();}
     }
 
     void pressButton(){
@@ -55,7 +62,7 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
         //else if (hardware.color.blue() <255 && hardware.color.blue() > 127) hardware.buttonPusher.setPosition(0.7);
     }
 
-    public void driveDistance(LinearOpMode7582 opMode, double speed, double distance, Functions.Units unit, DcMotor left, DcMotor right) {
+    public void driveDistance(double speed, double distance, Functions.Units unit, DcMotor left, DcMotor right) {
         double divisor;
         switch (unit){
             case INCHES:
@@ -77,23 +84,20 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
                 divisor = 1;
                 break;
         }
-        driveRotations(opMode, speed, distance/divisor, left, right);
+        driveRotationsMaintainHeading(distance/divisor, (float)speed);
     }
 
-    public void driveRotations(LinearOpMode7582 opMode, double speed, double rotations, DcMotor left, DcMotor right){
+    public void driveRotations(double speed, double rotations, DcMotor left, DcMotor right){
         int target = left.getCurrentPosition()+((int)((rotations*0.74) * 1440));
         idle();
         float heading = compass.getYaw();
         idle();
-        opMode.runtime.reset();
-
-
+        runtime.reset();
 
         left.setPower(speed);
         right.setPower(-speed);
 
-        while (left.getCurrentPosition() < (target - 10)){
-
+        while ((left.getCurrentPosition() < (target - 10)) && opModeIsActive()){
             if (heading - compass.getYaw() > 1){
                 left.setPower(speed);
                 right.setPower(-speed*0.8);
@@ -104,34 +108,94 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
                 left.setPower(speed);
                 right.setPower(-speed);
             }
-
-            opMode.telemetry.addData("Time", opMode.runtime.seconds());
-            opMode.telemetry.addData("Target", target);
-            opMode.telemetry.addData("PosLeft", opMode.hardware.leftDrive.getCurrentPosition());
-            opMode.telemetry.addData("PosRight", opMode.hardware.rightDrive.getCurrentPosition());
-            opMode.telemetry.update();
+            updateTelemetry();
         }
 
         left.setPower(0);
         right.setPower(0);
     }
 
+    public void driveRotationsMaintainHeading(double rotations, float speed){
+        int target = hardware.leftDrive.getCurrentPosition()+((int)((rotations*0.74) * 1440));
+
+        compass.driveWithMaintainedHeading(speed, new DcMotor[] {hardware.leftDrive, hardware.rightDrive});
+        while (hardware.leftDrive.getCurrentPosition() < target - 10) updateTelemetry();
+        compass.stopHeadingMaintainence();
+
+    }
+
     void turnToHeading(float heading){
+        float initHeading = compass.getYaw();
         float deltaHeading = (compass.getYaw()-heading);
         //This turns a robot to a specific absolute heading. This has no basis on the robot's starting rotation
         if (deltaHeading > 180 || deltaHeading < 0){
-            hardware.leftDrive.setPower(0.6);
-            hardware.rightDrive.setPower(0.6);
-            while (compass.getYaw() < heading-1);
-            hardware.leftDrive.setPower(0);
-            hardware.rightDrive.setPower(0);
+            hardware.leftDrive.setPower(1);
+            //hardware.rightDrive.setPower(0.6);
+            compass.runToHeading(heading, new DcMotor[] {hardware.leftDrive, hardware.rightDrive});
+            while (compass.areMotorsBusy() && opModeIsActive())
+                try {updateTelemetry(new Object[][]{{"Initial Heading", initHeading}, {"Target Heading", heading}, {"Delta Heading", deltaHeading}});}
+                catch (IllegalArgumentException e) {updateTelemetry();}
+            if (compass.areMotorsBusy()) compass.deactivateStopAtTarget();
+            else if (compass.getYaw() > heading + 1 || compass.getYaw() < heading - 1) turnToHeading(heading, 0.75f, true);
         } else {
-            hardware.leftDrive.setPower(-0.6);
-            hardware.rightDrive.setPower(-0.6);
-            while (compass.getYaw() > heading+1);
-            hardware.leftDrive.setPower(0);
-            hardware.rightDrive.setPower(0);
+            //hardware.leftDrive.setPower(-0.6);
+            hardware.rightDrive.setPower(-1);
+            compass.runToHeading(heading, new DcMotor[] {hardware.leftDrive, hardware.rightDrive});
+            while (compass.areMotorsBusy() && opModeIsActive())
+                try {updateTelemetry(new Object[][]{{"Initial Heading", initHeading}, {"Target Heading", heading}, {"Delta Heading", deltaHeading}});}
+                catch (IllegalArgumentException e) {updateTelemetry();}
+            if (compass.areMotorsBusy()) compass.deactivateStopAtTarget();
+            else if (compass.getYaw() > heading + 1 || compass.getYaw() < heading - 1) turnToHeading(heading, 0.75f, false);
         }
+    }
+
+    void turnToHeading(float heading, float speed, boolean wheel){
+        float initHeading = compass.getYaw();
+        float deltaHeading = (compass.getYaw()-heading);
+        //This turns a robot to a specific absolute heading. This has no basis on the robot's starting rotation
+        if (deltaHeading > 180 || deltaHeading < 0){
+            if (wheel) hardware.leftDrive.setPower(speed);
+            else hardware.rightDrive.setPower(speed);
+            compass.runToHeading(heading, new DcMotor[] {hardware.leftDrive, hardware.rightDrive});
+            while (compass.areMotorsBusy() && opModeIsActive())
+                try {updateTelemetry(new Object[][]{{"Initial Heading", initHeading}, {"Target Heading", heading}, {"Delta Heading", deltaHeading}});}
+                catch (IllegalArgumentException e) {updateTelemetry();}
+            if (compass.areMotorsBusy()) compass.deactivateStopAtTarget();
+            else if (compass.getYaw() > heading + 1 || compass.getYaw() < heading - 1) turnToHeading(heading, speed, wheel);
+        } else {
+            if (wheel) hardware.leftDrive.setPower(-speed);
+            else hardware.rightDrive.setPower(-speed);
+            compass.runToHeading(heading, new DcMotor[] {hardware.leftDrive, hardware.rightDrive});
+            while (compass.areMotorsBusy() && opModeIsActive())
+                try {updateTelemetry(new Object[][]{{"Initial Heading", initHeading}, {"Target Heading", heading}, {"Delta Heading", deltaHeading}});}
+                catch (IllegalArgumentException e) {updateTelemetry();}
+            if (compass.areMotorsBusy()) compass.deactivateStopAtTarget();
+            else if (compass.getYaw() > heading + 2 || compass.getYaw() < heading - 2) turnToHeading(heading, speed, wheel);
+        }
+
+        Functions.wait(this,0.5);
+        if (compass.getYaw() > heading + 1 || compass.getYaw() < heading - 1)
+            turnToHeading(heading, (speed > 0.15) ? speed * 0.75f : 0.15f, wheel);
+    }
+
+    void updateTelemetry(){
+        telemetry.addData("Time", runtime.seconds());
+        telemetry.addData("Starting Heading", startHeading);
+        telemetry.addData("Heading", compass.getYaw());
+        telemetry.addData("Encoder Position", hardware.leftDrive.getCurrentPosition());
+        telemetry.update();
+    }
+
+    void updateTelemetry(Object[][] additionalValues){
+        for (Object[] s : additionalValues){
+            if (!(s[0] instanceof String)) throw new IllegalArgumentException("First telemetry array value must be a string");
+            telemetry.addData((String)s[0], s[1]);
+        }
+
+        telemetry.addData("Time", runtime.seconds());
+        telemetry.addData("Heading", compass.getYaw());
+        telemetry.addData("Encoder Position", hardware.leftDrive.getCurrentPosition());
+        telemetry.update();
     }
 
     void turnToRelativeHeading(float heading){
