@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode.Vuforia;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -58,6 +59,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  *
  */
 
+@Disabled
 @TeleOp(name="Vuforia Tracking Demo", group="main")
 public class TeleopOpmode extends LinearOpMode {
 

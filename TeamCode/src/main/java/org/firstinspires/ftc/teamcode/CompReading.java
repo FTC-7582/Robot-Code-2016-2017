@@ -81,7 +81,7 @@ public class CompReading {
         maintainHeading = true;
     }
 
-    public void driveWithMaintainedHeading(float speed, DcMotor[] motors){
+    public void driveWithMaintainedHeading(float speed, DcMotor[] motors, ZeroTurnAuto opMode){
         this.motors = motors;
         this.speed = speed;
         this.heading = yaw;
@@ -100,19 +100,28 @@ public class CompReading {
 
             try {
 
+                //if (opMode instanceof ZeroTurnAuto) ((ZeroTurnAuto) opMode).runtime.reset();
+
                 yaw = event.values[0];
                 pitch = event.values[1];
                 roll = event.values[2];
 
                 if (stopAtHeading){
-                    if (event.values[0] > heading + 2 || event.values[0] < heading - 2){
+                    if (event.values[0] > heading + 3 || event.values[0] < heading - 3){
                         for (DcMotor motor : motors) motor.setPower(0);
                         deactivateStopAtTarget();
                         motors = new DcMotor[] {};
+                    } else {
+                        for (DcMotor motor : motors){
+                            motor.setPower(motor.getPower() * Functions.clampMin(((heading-yaw < 0) ? -(heading-yaw) : heading-yaw)/360.0d, 0.15d));
+                        }
                     }
-                } else if (maintainHeading){
+                }/* else if (maintainHeading){
                     if (motors.length > 2)  throw new IllegalArgumentException("There cannot be more than two drive motors on the robot. Please only pass an array with two motors");
                     float deltaHeading = (event.values[0]-heading);
+
+                    //if (opMode instanceof ZeroTurnAuto) ((ZeroTurnAuto) opMode).updateTelemetry(new Object[][]{{"Delta Heading", deltaHeading}, {"Speed", speed}});
+
                     //This turns a robot to a specific absolute heading. This has no basis on the robot's starting rotation
                     if (deltaHeading > 2 || deltaHeading < -2) {
                         if (deltaHeading > 180 || deltaHeading < 0) {
@@ -127,8 +136,8 @@ public class CompReading {
                             motor.setPower(speed);
                         }
                     }
-                }
-
+                }*/
+                //if (opMode instanceof ZeroTurnAuto) ((ZeroTurnAuto) opMode).updateTelemetry(new Object[][]{{"Runtime", ((ZeroTurnAuto) opMode).runtime.seconds()}, {"Turning", stopAtHeading}, {"Holding", maintainHeading}});
             } catch (Exception e) {
                 opMode.telemetry.addData("Exception", e.toString());
             }

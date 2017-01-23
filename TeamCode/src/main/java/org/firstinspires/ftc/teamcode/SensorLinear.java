@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 /**
  * Created by 970098955 on 12/19/2016.
  */
+@Disabled
 @Autonomous(name="Sensing Linear")
 public class SensorLinear extends LinearOpMode7582{
 

@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import android.provider.ContactsContract;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
 /**
@@ -218,9 +220,15 @@ public class Functions {
         INCHES, CENTIMETERS, FEET, METERS, ROTATIONS
     }
 
-    public static void wait(LinearOpMode7582 opMode, double seconds){
-        double start = opMode.runtime.seconds();
-        while (opMode.opModeIsActive() && (opMode.runtime.seconds()-start <= seconds));
+    public static void wait(OpMode opMode, double seconds){
+        if (opMode instanceof LinearOpMode7582) {
+            double start = ((LinearOpMode7582) opMode).runtime.seconds();
+            while (((LinearOpMode7582) opMode).opModeIsActive() && (((LinearOpMode7582) opMode).runtime.seconds() - start <= seconds));
+        }
+        else if (opMode instanceof IterativeOpMode7582){
+            double start = ((IterativeOpMode7582) opMode).runtime.seconds();
+            while (((IterativeOpMode7582) opMode).runtime.seconds() - start <= seconds);
+        }
     }
 
     public static double clamp(double value, double max, double min){

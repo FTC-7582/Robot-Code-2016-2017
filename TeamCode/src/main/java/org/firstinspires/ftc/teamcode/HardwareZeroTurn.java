@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,10 +22,11 @@ public class HardwareZeroTurn {
 
     //Declaring the variables
     public final DcMotor leftDrive, rightDrive;
-    public final DcMotor collector;
+    public final DcMotor collector, launcher;
     public final Servo buttonPusher, ballBlocker;
+
     //public final AccelerationSensor accel;
-    //public final ColorSensor color;
+    public final ColorSensor color;
     //public final LightSensor light;
 
     public HardwareZeroTurn(HardwareMap hardwareMap, boolean encoders){
@@ -31,13 +34,14 @@ public class HardwareZeroTurn {
         leftDrive = hardwareMap.dcMotor.get("LeftDrive");
         rightDrive = hardwareMap.dcMotor.get("RightDrive");
         collector = hardwareMap.dcMotor.get("Collector");
+        launcher = hardwareMap.dcMotor.get("Launcher");
         buttonPusher = hardwareMap.servo.get("Beacon");
         ballBlocker = hardwareMap.servo.get("Blocker");
         //accel = hardwareMap.accelerationSensor.get("Accel");
-        //color = hardwareMap.colorSensor.get("Color");
+        color = hardwareMap.colorSensor.get("Color");
         //light = hardwareMap.lightSensor.get("Light");
 
-
+        collector.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         //Sets the run mode for the motors
         if (encoders) {
