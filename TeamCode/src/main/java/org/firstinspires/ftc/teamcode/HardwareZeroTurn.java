@@ -41,8 +41,6 @@ public class HardwareZeroTurn {
         color = hardwareMap.colorSensor.get("Color");
         //light = hardwareMap.lightSensor.get("Light");
 
-        collector.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
         //Sets the run mode for the motors
         if (encoders) {
             leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

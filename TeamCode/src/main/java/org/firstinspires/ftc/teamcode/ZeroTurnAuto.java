@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
 /**
@@ -41,8 +42,12 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
         }
 
         //driveDistance(0.25, 2.0, Functions.Units.FEET);
-        target = driveDistance(0.5, 2, Functions.Units.FEET);
+        target = driveDistance(0.5, 4, Functions.Units.FEET);
+        runtime.reset();
+        while (runtime.seconds() < 0.5);
+        target = driveDistance(0.5, -1, Functions.Units.FEET);
         turn(-90, 0.5);
+
         //turnToRelativeHeading(90);
         //Functions.wait(this, 1);
         //turnToRelativeHeading(270);
@@ -101,10 +106,10 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
 
 
         if (target < 0){
-            hardware.rightDrive.setPower(speed*0.7);
+            hardware.rightDrive.setPower(speed*0.75);
             hardware.leftDrive.setPower(-speed);
         } else {
-            hardware.rightDrive.setPower(-speed*0.7);
+            hardware.rightDrive.setPower(-speed*0.75);
             hardware.leftDrive.setPower(speed);
         }
 
@@ -159,7 +164,7 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
             deltaH = -(360-(tarHeading-compass.getYaw()));
         else*/ deltaH = tarHeading - compass.getYaw();
 
-        if (deltaH > 7 || deltaH < -7) turnToHeading(tarHeading, speed*0.5);
+        //if (deltaH > 7 || deltaH < -7) turnToHeading(tarHeading, speed*0.5);
     }
 
     void turnToHeading(float heading, double speed){
@@ -293,14 +298,6 @@ public class ZeroTurnAuto extends LinearOpMode7582 {
         telemetry.addData("Heading", compass.getYaw());
         telemetry.addData("Encoder Position", hardware.leftDrive.getCurrentPosition());
         telemetry.update();
-    }
-
-    void turnToRelativeHeading(float heading){
-        //Turns the robot to a heading based on the robots heading at the time of function call
-        //For example, if the robot starts facing 90 degrees and the user passes turnToRelativeHeading
-        //      45 degrees, the robot will turn to the absolute heading of 135.
-
-        turnToHeading((compass.getYaw()+heading)%360);
     }
 
 }
