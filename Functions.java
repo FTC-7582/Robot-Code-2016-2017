@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.provider.ContactsContract;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
@@ -24,7 +19,7 @@ public class Functions {
         SQUARE_ROOT, CIRCLE, REVERSE_SQUARE_ROOT, DAMPENED_CIRCLE, COSINE, INVERSE_COSINE
     }
 
-    public static double getMappedMotorPower(double input, Algorithms algorithm){
+    public static double map(double input, Algorithms algorithm){
         //Graphical view of algorithms: https://www.desmos.com/calculator/wuo2ngstq1
         switch (algorithm){
             case SQUARE_ROOT:
@@ -65,7 +60,7 @@ public class Functions {
                 return input;
         }
     }
-    public static double getMappedMotorPower(double input, Algorithms algorithm, double dampening) {
+    public static double map(double input, Algorithms algorithm, double dampening) {
         //Graphical view of algorithms: https://www.desmos.com/calculator/ync9ayg4dx
         if (algorithm == DAMPENED_CIRCLE) {
             if (input < 0){
@@ -73,7 +68,7 @@ public class Functions {
             } else {
                 return 1-Math.sqrt(Range.clip(1-Math.pow(input, dampening), 0.0d, 1.0d));
             }
-        } else return getMappedMotorPower(input, algorithm);
+        } else return map(input, algorithm);
     }
 
     public enum Units{
@@ -83,7 +78,7 @@ public class Functions {
     public static void wait(OpMode opMode, double seconds){
         if (opMode instanceof LinearOpMode7582) {
             double start = ((LinearOpMode7582) opMode).runtime.seconds();
-            while (((LinearOpMode7582) opMode).opModeIsActive() && (((LinearOpMode7582) opMode).runtime.seconds() - start <= seconds));
+            while (((LinearOpMode7582) opMode).opModeIsActive() && (((LinearOpMode7582) opMode).runtime.seconds() - start <= seconds)) ((LinearOpMode7582) opMode).idle();
         }
         else if (opMode instanceof IterativeOpMode7582){
             double start = ((IterativeOpMode7582) opMode).runtime.seconds();
@@ -91,16 +86,10 @@ public class Functions {
         }
     }
 
-    public static double clamp(double value, double max, double min){
-        return (value > max) ? max : ((value < min) ? min : value);
-    }
+    public static double clamp(double value, double max, double min){return (value > max) ? max : ((value < min) ? min : value);}
 
-    public static double clampMax(double value, double max){
-        return (value > max) ? max : value;
-    }
+    public static double clampMax(double value, double max){return (value > max) ? max : value;}
 
-    public static double clampMin(double value, double min){
-        return (value < min) ? min : value;
-    }
+    public static double clampMin(double value, double min){return (value < min) ? min : value;}
 
 }

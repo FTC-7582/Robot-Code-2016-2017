@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 
@@ -49,19 +44,19 @@ public class ZeroTurnTele extends IterativeOpMode7582{
             else multiplier = 1;
             if (reverse) {
                 if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
-                    hardware.leftDrive.setPower(multiplier * -Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.Algorithms.COSINE));
-                    hardware.rightDrive.setPower(multiplier * Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.Algorithms.COSINE));
+                    hardware.leftDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE));
+                    hardware.rightDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE));
                 } else {
-                    hardware.leftDrive.setPower(multiplier * -Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 3);
-                    hardware.rightDrive.setPower(multiplier * Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 3);
+                    hardware.leftDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 3);
+                    hardware.rightDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 3);
                 }
             } else {
                 if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
-                    hardware.leftDrive.setPower(multiplier * Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.Algorithms.COSINE));
-                    hardware.rightDrive.setPower(multiplier * -Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.Algorithms.COSINE));
+                    hardware.leftDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE));
+                    hardware.rightDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE));
                 } else {
-                    hardware.leftDrive.setPower(multiplier * Functions.getMappedMotorPower(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 3);
-                    hardware.rightDrive.setPower(multiplier * -Functions.getMappedMotorPower(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 3);
+                    hardware.leftDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 3);
+                    hardware.rightDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 3);
                 }
             }
 

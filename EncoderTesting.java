@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 
 
-@Autonomous(name="Sensor Testing", group = "debug")
-public class SensorTesting extends IterativeOpMode7582{
+@Autonomous(name="Encoder Testing", group = "debug")
+public class EncoderTesting extends IterativeOpMode7582{
 
     CompReading compass = new CompReading(this);
 
@@ -27,8 +27,8 @@ public class SensorTesting extends IterativeOpMode7582{
 
     @Override
     public void start() {
-        hardware.rightDrive.setPower(-0.25);
-        hardware.leftDrive.setPower(-0.25);
+        //hardware.rightDrive.setPower(0.25);
+        //hardware.leftDrive.setPower(0.25);
     }
 
     @Override
