@@ -25,7 +25,7 @@ public class HardwareZeroTurn {
     public final DcMotor collector, launcher;
     public final Servo buttonPusher, ballBlocker;
 
-    //public final AccelerationSensor accel;
+    public final AccelerationSensor accel;
     public final ColorSensor color;
     //public final LightSensor light;
 
@@ -37,7 +37,7 @@ public class HardwareZeroTurn {
         launcher = hardwareMap.dcMotor.get("Launcher");
         buttonPusher = hardwareMap.servo.get("Beacon");
         ballBlocker = hardwareMap.servo.get("Blocker");
-        //accel = hardwareMap.accelerationSensor.get("Accel");
+        accel = hardwareMap.accelerationSensor.get("Accel");
         color = hardwareMap.colorSensor.get("Color");
         //light = hardwareMap.lightSensor.get("Light");
 

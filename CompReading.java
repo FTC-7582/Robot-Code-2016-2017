@@ -6,7 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -81,7 +80,7 @@ public class CompReading {
         maintainHeading = true;
     }
 
-    public void driveWithMaintainedHeading(float speed, DcMotor[] motors, ZeroTurnAuto opMode){
+    public void driveWithMaintainedHeading(float speed, DcMotor[] motors, ZeroTurnAutoRed opMode){
         this.motors = motors;
         this.speed = speed;
         this.heading = yaw;
@@ -100,7 +99,7 @@ public class CompReading {
 
             try {
 
-                //if (opMode instanceof ZeroTurnAuto) ((ZeroTurnAuto) opMode).runtime.reset();
+                //if (opMode instanceof ZeroTurnAutoRed) ((ZeroTurnAutoRed) opMode).runtime.reset();
 
                 yaw = event.values[0];
                 pitch = event.values[1];
@@ -120,7 +119,7 @@ public class CompReading {
                     if (motors.length > 2)  throw new IllegalArgumentException("There cannot be more than two drive motors on the robot. Please only pass an array with two motors");
                     float deltaHeading = (event.values[0]-heading);
 
-                    //if (opMode instanceof ZeroTurnAuto) ((ZeroTurnAuto) opMode).updateTelemetry(new Object[][]{{"Delta Heading", deltaHeading}, {"Speed", speed}});
+                    //if (opMode instanceof ZeroTurnAutoRed) ((ZeroTurnAutoRed) opMode).updateTelemetry(new Object[][]{{"Delta Heading", deltaHeading}, {"Speed", speed}});
 
                     //This turns a robot to a specific absolute heading. This has no basis on the robot's starting rotation
                     if (deltaHeading > 2 || deltaHeading < -2) {
@@ -137,7 +136,7 @@ public class CompReading {
                         }
                     }
                 }*/
-                //if (opMode instanceof ZeroTurnAuto) ((ZeroTurnAuto) opMode).updateTelemetry(new Object[][]{{"Runtime", ((ZeroTurnAuto) opMode).runtime.seconds()}, {"Turning", stopAtHeading}, {"Holding", maintainHeading}});
+                //if (opMode instanceof ZeroTurnAutoRed) ((ZeroTurnAutoRed) opMode).updateTelemetry(new Object[][]{{"Runtime", ((ZeroTurnAutoRed) opMode).runtime.seconds()}, {"Turning", stopAtHeading}, {"Holding", maintainHeading}});
             } catch (Exception e) {
                 opMode.telemetry.addData("Exception", e.toString());
             }
