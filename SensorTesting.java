@@ -27,6 +27,13 @@ public class SensorTesting extends IterativeOpMode7582{
         gyro.calibrate();
         while (gyro.isCalibrating());
         telemetry.addLine("Calibrated");
+
+        try {
+            gyro.resetZAxisIntegrator();
+        } catch (UnsupportedOperationException e){
+            telemetry.addLine("Unable to use resetZAxisIntegrator");
+        }
+
         telemetry.update();
     }
 
@@ -47,19 +54,25 @@ public class SensorTesting extends IterativeOpMode7582{
         try {
             telemetry.addData("X", gyro.rawX());
         } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use raw x");
+            telemetry.addLine("Unable to use rawX");
         }
 
         try {
             telemetry.addData("Y", gyro.rawY());
         } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use raw y");
+            telemetry.addLine("Unable to use rawY");
         }
 
         try {
             telemetry.addData("Z", gyro.rawZ());
         } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use raw z");
+            telemetry.addLine("Unable to use rawZ");
+        }
+
+        try {
+            telemetry.addData("Fraction", gyro.getRotationFraction());
+        } catch (UnsupportedOperationException e){
+            telemetry.addLine("Unable to use getRotationFraction");
         }
 
         telemetry.update();
