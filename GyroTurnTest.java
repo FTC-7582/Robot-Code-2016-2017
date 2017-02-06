@@ -8,15 +8,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 
 
-@Autonomous(name="Sensor Testing", group = "debug")
-public class SensorTesting extends IterativeOpMode7582{
+@Autonomous(name="Gyro Turn Test", group = "debug")
+
+public class GyroTurnTest extends IterativeOpMode7582{
 
     CompReading compass = new CompReading(this);
     //AccelReading accel = new AccelReading(this);
 
     GyroSensor gyro;
     private double zeroOffset;
-
 
     @Override
     public void init() {
@@ -25,8 +25,12 @@ public class SensorTesting extends IterativeOpMode7582{
         hardware.ballBlocker.setPosition(0.175);
         hardware.buttonPusher.setPosition(0.51);
         hardware.color.enableLed(false);
+        hardware.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Functions.wait(this, 0.1);
+        hardware.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //accel.init();
         calibrateGyro();
         telemetry.addData("Calibrated TPD", zeroOffset);
 
@@ -45,6 +49,8 @@ public class SensorTesting extends IterativeOpMode7582{
     public void start() {
         lastTime = System.currentTimeMillis();
         gyroHeading = 0;
+        hardware.rightDrive.setPower(0.25);
+        hardware.leftDrive.setPower(0.25);
 
     }
 
@@ -54,47 +60,15 @@ public class SensorTesting extends IterativeOpMode7582{
     private long lastTime = System.currentTimeMillis();
     private double tvalue;
     private long tinc;
-    double degrees = 30;
+    double degrees = 240;
+    int loopcnt = 0;
 
     @Override
     public void loop() {
+        if (loopcnt == 0) {lastTime = System.currentTimeMillis();};
+        loopcnt += 1;
 
-
- /*       try {
-            telemetry.addData("Heading", gyro.getHeading());
-        } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use getHeading");
-        }
-
-        try {
-            telemetry.addData("X", gyro.rawX());
-        } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use rawX");
-        }
-
-        try {
-            telemetry.addData("Y", gyro.rawY());
-        } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use rawY");
-        }
-
-        try {
-            telemetry.addData("Z", gyro.rawZ());
-        } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use rawZ");
-        }
-
-        try {
-            telemetry.addData("Fraction", gyro.getRotationFraction());
-        } catch (UnsupportedOperationException e){
-            telemetry.addLine("Unable to use getRotationFraction");
-        }
-        angvel = gyro.getRotationFraction() - zeroOffset;
-        // print the angular velocity
-        telemetry.addData("Ang Vel", angvel);
-        telemetry.update();
-*/
-//        while (Math.abs(gyroHeading) <= Math.abs(degrees) ) {
+        if (Math.abs(gyroHeading) <= Math.abs(degrees) ) {
             telemetry.addData("Gyro Heading", gyroHeading);
             integrateGyro();
             telemetry.addData("tvalue, tinc", tvalue + ", " + tinc);
@@ -102,8 +76,10 @@ public class SensorTesting extends IterativeOpMode7582{
             telemetry.addData("deadband", deadband);
             telemetry.addData("zeroOffset", zeroOffset);
             telemetry.update();
- //      }
-
+        } else {
+            hardware.rightDrive.setPower(0);
+            hardware.leftDrive.setPower(0);
+        }
 
     }
 
@@ -134,7 +110,7 @@ public class SensorTesting extends IterativeOpMode7582{
 
     public void integrateGyro() {
         long currTime = System.currentTimeMillis();
-        double value = (gyro.getRotationFraction() - zeroOffset) * 360;
+        double value = (gyro.getRotationFraction() - zeroOffset) * 720;
         if (Math.abs(value) < deadband) value = 0.0;
         gyroHeading += value * (currTime - lastTime) / 1000.0;
         tinc = currTime - lastTime;
