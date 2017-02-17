@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -24,6 +25,7 @@ public class HardwareZeroTurn {
     public final DcMotor leftDrive, rightDrive;
     public final DcMotor collector, launcher;
     public final Servo buttonPusher, ballBlocker;
+    public final GyroSensor gyro;
 
     //public final AccelerationSensor accel;
     public final ColorSensor color;
@@ -37,9 +39,8 @@ public class HardwareZeroTurn {
         launcher = hardwareMap.dcMotor.get("Launcher");
         buttonPusher = hardwareMap.servo.get("Beacon");
         ballBlocker = hardwareMap.servo.get("Blocker");
-        //accel = hardwareMap.accelerationSensor.get("Accel");
+        gyro = hardwareMap.gyroSensor.get("Gyro");
         color = hardwareMap.colorSensor.get("Color");
-        //light = hardwareMap.lightSensor.get("Light");
 
         //Sets the run mode for the motors
         if (encoders) {
