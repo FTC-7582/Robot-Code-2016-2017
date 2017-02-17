@@ -1,21 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-/**
- * Created by 970098955 on 2/6/2017.
- */
-
 public class Gyroscope {
     private final HardwareZeroTurn hardware;
 
     private double heading;
     private double deadband;
     private double bias;
-    private double deltaTime;
     private double lastTime;
-    private double velocity;
 
     private final float maxDPS = 360;
 
@@ -41,9 +32,9 @@ public class Gyroscope {
 
     public void update(){
         long currTime = System.currentTimeMillis();
-        velocity = (hardware.gyro.getRotationFraction() - bias) * maxDPS;
-        deltaTime = currTime - lastTime;
+        double velocity = (hardware.gyro.getRotationFraction() - bias);
         if (Math.abs(velocity) < deadband) velocity = 0.0;
+        else velocity *= maxDPS;
         heading += velocity * (currTime - lastTime) / 1000.0;
         long time = System.currentTimeMillis();
         lastTime = currTime;

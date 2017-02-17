@@ -96,7 +96,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
         while (opModeIsActive()){
             if (!hardware.leftDrive.isBusy()) hardware.leftDrive.setPower(0);
             if (!hardware.rightDrive.isBusy()) hardware.rightDrive.setPower(0);
-            if (!(hardware.leftDrive.isBusy() || hardware.rightDrive.isBusy())) break;
+            if (hardware.leftDrive.getPower() == 0 && hardware.rightDrive.getPower() == 0) break;
             gyro.update();
             updateTelemetry(new Object[][] {
                     {"Target left, right", targets[0] + ", " + targets[1]},
@@ -121,20 +121,25 @@ public class ZTAutonomous extends LinearOpMode7582 {
             speed = -speed;
             degrees = -degrees;
         }
+
+        degrees /= 3;
+
         double init = gyro.getHeading();
         double target = gyro.getHeading() + degrees;
 
         if (degrees > 0) {
             hardware.rightDrive.setPower(speed);
             hardware.leftDrive.setPower(speed);
-            while (gyro.getHeading() < target){
+            while (gyro.getHeading() < target && opModeIsActive()){
                 gyro.update();
+                updateTelemetry(new Object[][] {{"Target", (target-init) * 3}, {"Current", (gyro.getHeading()-init) * 3}} , false);
             }
         } else if (degrees < 0){
             hardware.rightDrive.setPower(-speed);
             hardware.leftDrive.setPower(-speed);
-            while (gyro.getHeading() > target){
+            while (gyro.getHeading() > target && opModeIsActive()){
                 gyro.update();
+                updateTelemetry(new Object[][] {{"Target", (target-init) * 3}, {"Current", (gyro.getHeading()-init) * 3}} , false);
             }
         }
 
@@ -142,6 +147,11 @@ public class ZTAutonomous extends LinearOpMode7582 {
         hardware.leftDrive.setPower(0);
 
         return new double[] {init, target};
+    }
+
+    void delay(long milliseconds){
+        long time = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time < milliseconds);
     }
 
     void updateTelemetry(Object[][] additionalValues, boolean defaults){
