@@ -9,11 +9,15 @@ public class Red extends ZTAutonomous{
 
     @Override
     public void run(){
-        driveDistance(0.5f, 3, Functions.Units.FEET);
+        driveDistance(0.5f, 4.5, Functions.Units.FEET);
+        hardware.launcher.setPower(-1);
+        delay(2000);
+        hardware.launcher.setPower(0);
 //        driveDistance(0.5f, -3, Functions.Units.FEET);
-        double[] t = turn(90, 0.5f);
-        delay(500);
-        turn(-90, 0.5f);
+        driveDistance(0.5f, -1, Functions.Units.FEET);
+        /*double[] t = */turn(-45, 0.5f);
+        //delay(500);
+        //turn(-90, 0.5f);
 
         /*while (opModeIsActive()){
             updateTelemetry(new Object[][] {
