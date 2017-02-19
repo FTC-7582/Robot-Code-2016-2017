@@ -18,17 +18,22 @@ public class Red extends ZTAutonomous{
         turn(-45, 0.5f);
         */
 
-        driveDistance(0.5f, 2, Functions.Units.FEET);
-        driveDistance(0.5f, -2, Functions.Units.FEET);
-        turn(180, 0.2f);
-        turn(-360, 0.2f);
+        driveDistance(0.5f, 1, Functions.Units.FEET);
+        turn(90, 0.2);
+        driveDistance(0.5f, 1, Functions.Units.FEET);
+        turn(90, 0.2);
+        driveDistance(0.5f, 1, Functions.Units.FEET);
+        turn(90, 0.2);
+        driveDistance(0.5f, 1, Functions.Units.FEET);
+        turn(90, 0.2);
 
         while(opModeIsActive()){
             gyro.update();
             updateTelemetry(new Object[][] {
                     {"Velocity", gyro.getVelocity()},
-                    {"Velocity Degrees", gyro.getVelocity() * 1000},
-                    {"Deadband Degrees", ((int)(gyro.getDeadband() * 1000000))/1000.0f}
+                    {"Velocity Degrees", gyro.getVelocity() * 1080},
+                    {"Deadband Degrees", ((int)(gyro.getDeadband() * 1000000))/1000.0f},
+                    //{"Heading Offset", gyro.getHeading() - t[1]}
             }, true);
         }
     }
