@@ -137,7 +137,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
             hardware.leftDrive.setPower(-speed);
             while (gyro.getHeading() > target && opModeIsActive()){
                 gyro.update();
-                updateTelemetry(new Object[][] {{"Target", (target-init) * 3}, {"Current", gyro.getHeading()-init}} , false);
+                updateTelemetry(new Object[][] {{"Target", target-init}, {"Current", gyro.getHeading()-init}} , false);
             }
         }
 
