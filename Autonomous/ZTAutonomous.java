@@ -122,8 +122,6 @@ public class ZTAutonomous extends LinearOpMode7582 {
             degrees = -degrees;
         }
 
-        degrees /= 3;
-
         double init = gyro.getHeading();
         double target = gyro.getHeading() + degrees;
 
@@ -132,14 +130,14 @@ public class ZTAutonomous extends LinearOpMode7582 {
             hardware.leftDrive.setPower(speed);
             while (gyro.getHeading() < target && opModeIsActive()){
                 gyro.update();
-                updateTelemetry(new Object[][] {{"Target", (target-init) * 3}, {"Current", (gyro.getHeading()-init) * 3}} , false);
+                updateTelemetry(new Object[][] {{"Target", target-init}, {"Current", gyro.getHeading()-init}} , false);
             }
         } else if (degrees < 0){
             hardware.rightDrive.setPower(-speed);
             hardware.leftDrive.setPower(-speed);
             while (gyro.getHeading() > target && opModeIsActive()){
                 gyro.update();
-                updateTelemetry(new Object[][] {{"Target", (target-init) * 3}, {"Current", (gyro.getHeading()-init) * 3}} , false);
+                updateTelemetry(new Object[][] {{"Target", (target-init) * 3}, {"Current", gyro.getHeading()-init}} , false);
             }
         }
 
