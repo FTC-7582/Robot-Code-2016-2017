@@ -9,22 +9,27 @@ public class Red extends ZTAutonomous{
 
     @Override
     public void run(){
+        /*
         driveDistance(0.5f, 4.5, Functions.Units.FEET);
         hardware.launcher.setPower(-1);
         delay(2000);
         hardware.launcher.setPower(0);
-//        driveDistance(0.5f, -3, Functions.Units.FEET);
         driveDistance(0.5f, -1, Functions.Units.FEET);
-        /*double[] t = */turn(-45, 0.5f);
-        //delay(500);
-        //turn(-90, 0.5f);
+        turn(-45, 0.5f);
+        */
 
-        /*while (opModeIsActive()){
+        driveDistance(0.5f, 2, Functions.Units.FEET);
+        driveDistance(0.5f, -2, Functions.Units.FEET);
+        turn(180, 0.2f);
+        turn(-360, 0.2f);
+
+        while(opModeIsActive()){
+            gyro.update();
             updateTelemetry(new Object[][] {
-                    {"Target Heading", t[1]},
-                    {"Initial Heading", t[0]},
-                    {"Current Heading", gyro.getHeading()}
-            }, false);
-        }*/
+                    {"Velocity", gyro.getVelocity()},
+                    {"Velocity Degrees", gyro.getVelocity() * 1000},
+                    {"Deadband Degrees", ((int)(gyro.getDeadband() * 1000000))/1000.0f}
+            }, true);
+        }
     }
 }

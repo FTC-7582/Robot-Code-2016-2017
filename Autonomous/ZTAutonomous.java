@@ -115,7 +115,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
         return 0;
     }
 
-    double[] turn(float degrees, double speed){
+    double[] turn(double degrees, double speed){
         gyro.update();
         if (speed < 0){
             speed = -speed;
@@ -144,12 +144,18 @@ public class ZTAutonomous extends LinearOpMode7582 {
         hardware.rightDrive.setPower(0);
         hardware.leftDrive.setPower(0);
 
+        delay(500);
+
+        if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3){
+            turn(target-gyro.getHeading(), speed);
+        }
+
         return new double[] {init, target};
     }
 
     void delay(long milliseconds){
         long time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time < milliseconds);
+        while (System.currentTimeMillis() - time < milliseconds && opModeIsActive());
     }
 
     void updateTelemetry(Object[][] additionalValues, boolean defaults){
@@ -160,7 +166,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
 
         if (defaults) {
             telemetry.addData("Time", (((int) runtime.seconds()) / 60) + ":" + (((int) runtime.seconds()) % 60));
-            telemetry.addData("Heading", gyro.getHeading());
+            telemetry.addData("Heading", ((int)(gyro.getHeading()*1000))/1000.0f);
         }
         telemetry.update();
     }
