@@ -116,6 +116,76 @@ public class ZTAutonomous extends LinearOpMode7582 {
     }
 
     double[] turn(double degrees, double speed){
+        gyro.calibrate();
+        gyro.update();
+        if (speed < 0){
+            speed = -speed;
+            degrees = -degrees;
+        }
+//  ************** need to add code that will stop turn if angle and target are diverging *****************
+        double init = gyro.getHeading();
+        double target = init + degrees;
+        if (degrees > 0) {
+            hardware.rightDrive.setPower(speed);
+            hardware.leftDrive.setPower(speed);
+            while (gyro.getHeading() < target && opModeIsActive()){
+                gyro.update();
+                updateTelemetry(new Object[][] {{"Target", target},
+                        {"Current", gyro.getHeading()},
+                        {"Velocity", gyro.getVelocity()},
+                        {"Dtime", gyro.getDeltaTime()},
+                        {"Deadband", gyro.getDeadband()}} , false);
+// When turn gets within 45 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
+                    if (target - gyro.getHeading() < 45) {
+                        double newspeed = speed * (target - gyro.getHeading()) / 45 ;
+                        if (newspeed < .03) {newspeed = .03;} ;
+                            hardware.rightDrive.setPower(newspeed) ;
+                            hardware.leftDrive.setPower(newspeed);
+                    }
+            }
+        } else if (degrees < 0){
+            hardware.rightDrive.setPower(-speed);
+            hardware.leftDrive.setPower(-speed);
+            while (gyro.getHeading() > target && opModeIsActive()){
+                gyro.update();
+                updateTelemetry(new Object[][] {{"Target", target}, {"Current", gyro.getHeading()}} , false);
+// When turn gets within 30 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
+                if (gyro.getHeading()- target < 45) {
+                    double newspeed = -speed * (gyro.getHeading()- target) / 45 ;
+                    if (Math.abs(newspeed) < .03) {newspeed = -.03;} ;
+                    hardware.rightDrive.setPower(newspeed) ;
+                    hardware.leftDrive.setPower(newspeed);
+                }
+
+            }
+        }
+
+        hardware.rightDrive.setPower(0);
+        hardware.leftDrive.setPower(0);
+// continue to integrate gyro for .25 seconds after turn stop to capture overshoot
+        double time = runtime.milliseconds();
+        while (runtime.milliseconds() - time < 250) {
+            gyro.update();
+        }
+
+        updateTelemetry(new Object[][] {{"Target", target},
+                {"Current", gyro.getHeading()},
+                {"Velocity", gyro.getVelocity()},
+                {"Dtime", gyro.getDeltaTime()},
+                {"Deadband", gyro.getDeadband()}} , false);
+// If target is missed by more than 3 degrees, adjustment is made at minimum power 3%.
+        if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3){
+            turn(target-gyro.getHeading(), .03);
+        }
+
+        return new double[] {init, target};
+    }
+
+
+
+// For gyro debugging and constant determination
+    double[] readgyro(double degrees, double speed){
+        gyro.calibrate();
         gyro.update();
         if (speed < 0){
             speed = -speed;
@@ -123,35 +193,22 @@ public class ZTAutonomous extends LinearOpMode7582 {
         }
 
         double init = gyro.getHeading();
-        double target = gyro.getHeading() + degrees;
+        double target = init + degrees;
 
-        if (degrees > 0) {
-            hardware.rightDrive.setPower(speed);
-            hardware.leftDrive.setPower(speed);
-            while (gyro.getHeading() < target && opModeIsActive()){
+            while ( opModeIsActive()){
                 gyro.update();
-                updateTelemetry(new Object[][] {{"Target", target-init}, {"Current", gyro.getHeading()-init}} , false);
+                updateTelemetry(new Object[][] {{"Raw", gyro.getRaw()},
+                        {"Current", gyro.getHeading()},
+                        {"Velocity", gyro.getVelocity()},
+                        {"Dtime", gyro.getDeltaTime()},
+                        {"Deadband", gyro.getDeadband()}} , false);
             }
-        } else if (degrees < 0){
-            hardware.rightDrive.setPower(-speed);
-            hardware.leftDrive.setPower(-speed);
-            while (gyro.getHeading() > target && opModeIsActive()){
-                gyro.update();
-                updateTelemetry(new Object[][] {{"Target", target-init}, {"Current", gyro.getHeading()-init}} , false);
-            }
-        }
 
-        hardware.rightDrive.setPower(0);
-        hardware.leftDrive.setPower(0);
-
-        delay(500);
-
-        if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3){
-            turn(target-gyro.getHeading(), speed);
-        }
 
         return new double[] {init, target};
     }
+// end of code for reading gyro only
+
 
     void delay(long milliseconds){
         long time = System.currentTimeMillis();

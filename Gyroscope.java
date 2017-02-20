@@ -14,7 +14,7 @@ public class Gyroscope {
     private double raw;
     private double velocity;
 
-    private final float maxDPS = 1080;
+    private final float maxDPS = 995;
 
     public Gyroscope(HardwareZeroTurn hardware){this.hardware = hardware;}
 
@@ -25,17 +25,17 @@ public class Gyroscope {
         double maxValue = value;
         bias = 0.0;
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 50; i++)
         {
             value = hardware.gyro.getRotationFraction();
             bias += value;
             if (value < minValue) minValue = value;
             if (value > maxValue) maxValue = value;
             double time = runtime.milliseconds();
-            while (runtime.milliseconds() - time < 10);
+            while (runtime.milliseconds() - time < 20);
         }
-        bias /= 100.0;
-        deadband = (maxValue* 1.1) - (minValue * 0.9);
+        bias /= 50.0;
+        deadband = (maxValue) - (minValue);
     }
 
     public void update(){
@@ -45,16 +45,16 @@ public class Gyroscope {
         if (Math.abs(velocity) < deadband) velocity = 0.0;
         raw += velocity * (deltaTime/1000.0);
         heading += velocity * maxDPS * (deltaTime/1000.0);
-        double time = runtime.milliseconds();
         lastTime = currTime;
+        double time = runtime.milliseconds();
         while (runtime.milliseconds() - time < 5);
     }
 
     public double getHeading(){return heading;}
     public double getRaw(){return raw;}
-    public double getVelocity(){return velocity;}
-    public double getBias(){return bias;}
-    public double getDeadband(){return deadband;}
+    public double getVelocity(){return velocity*maxDPS;}
+    public double getBias(){return bias*maxDPS;}
+    public double getDeadband(){return deadband*maxDPS;}
     public double getDeltaTime() {return deltaTime;}
 
 }
