@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Functions;
 import org.firstinspires.ftc.teamcode.Gyroscope;
+import org.firstinspires.ftc.teamcode.HardwareZeroTurn;
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
 /**
@@ -18,7 +19,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
     public void runOpMode() {
         super.runOpMode();
         initialize();
-        waitForStart();
+        while (!opModeIsActive() && !isStopRequested());
         run();
     }
 
@@ -28,7 +29,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
         super.runOpMode();
         gyro = new Gyroscope(hardware);
         gyro.calibrate();
-        hardware.ballBlocker.setPosition(0.175);
+        hardware.ballBlocker.setPosition(0.185);
         hardware.buttonPusher.setPosition(0.5);
 
         hardware.color.enableLed(false);
@@ -116,7 +117,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
     }
 
     double[] turn(double degrees, double speed){
-        gyro.calibrate();
+        //gyro.calibrate();
         gyro.update();
         if (speed < 0){
             speed = -speed;
@@ -130,26 +131,33 @@ public class ZTAutonomous extends LinearOpMode7582 {
             hardware.leftDrive.setPower(speed);
             while (gyro.getHeading() < target && opModeIsActive()){
                 gyro.update();
-                updateTelemetry(new Object[][] {{"Target", target},
+                updateTelemetry(new Object[][] {
+                        {"Target", target},
                         {"Current", gyro.getHeading()},
                         {"Velocity", gyro.getVelocity()},
                         {"Dtime", gyro.getDeltaTime()},
                         {"Deadband", gyro.getDeadband()}} , false);
 // When turn gets within 45 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
                     if (target - gyro.getHeading() < 45) {
-                        double newspeed = speed * (target - gyro.getHeading()) / 45 ;
-                        if (newspeed < .03) {newspeed = .03;} ;
-                            hardware.rightDrive.setPower(newspeed) ;
+                        double newspeed = speed * (target - gyro.getHeading()) / 45;
+                        if (newspeed < .03) {newspeed = .03;}
+                            hardware.rightDrive.setPower(newspeed);
                             hardware.leftDrive.setPower(newspeed);
                     }
             }
         } else if (degrees < 0){
+
             hardware.rightDrive.setPower(-speed);
             hardware.leftDrive.setPower(-speed);
             while (gyro.getHeading() > target && opModeIsActive()){
                 gyro.update();
-                updateTelemetry(new Object[][] {{"Target", target}, {"Current", gyro.getHeading()}} , false);
-// When turn gets within 30 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
+                updateTelemetry(new Object[][] {
+                        {"Target", target},
+                        {"Current", gyro.getHeading()},
+                        {"Velocity", gyro.getVelocity()},
+                        {"Dtime", gyro.getDeltaTime()},
+                        {"Deadband", gyro.getDeadband()}} , false);
+// When turn gets within 45 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
                 if (gyro.getHeading()- target < 45) {
                     double newspeed = -speed * (gyro.getHeading()- target) / 45 ;
                     if (Math.abs(newspeed) < .03) {newspeed = -.03;} ;
@@ -181,7 +189,29 @@ public class ZTAutonomous extends LinearOpMode7582 {
         return new double[] {init, target};
     }
 
+    void runPopTartAccelerator(int duration) {
+        hardware.launcher.setPower(-1);
+        delay(duration);
+        hardware.launcher.setPower(0);
+    }
 
+    void launchCorner(int duration) {
+        while (hardware.collector .getPower() < 1)
+            hardware.collector.setPower(Functions.clampMax(hardware.collector.getPower() + 0.05, 1));
+
+        hardware.ballBlocker.setPosition(0.5);
+        delay(1000);
+        hardware.ballBlocker.setPosition(HardwareZeroTurn.ballBlockerDown);
+        while (hardware.collector.getPower() > -1)
+            hardware.collector.setPower(Functions.clampMin(hardware.collector.getPower() - 0.05, -1));
+        delay(500);
+        hardware.ballBlocker.setPosition(0.5);
+        delay(duration);
+        hardware.ballBlocker.setPosition(HardwareZeroTurn.ballBlockerDown);
+
+        while (hardware.collector.getPower() < 0)
+            hardware.collector.setPower(Functions.clampMax(hardware.collector.getPower() + 0.015, 0));
+    }
 
 // For gyro debugging and constant determination
     double[] readgyro(double degrees, double speed){

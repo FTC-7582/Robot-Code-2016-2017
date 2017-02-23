@@ -21,8 +21,8 @@ public class ZeroTurnTele extends IterativeOpMode7582{
     @Override
     public void init() {
         super.init();
-        hardware.buttonPusher.setPosition(0.51);
-        hardware.ballBlocker.setPosition(0.175);
+        hardware.buttonPusher.setPosition(0.5);
+        hardware.ballBlocker.setPosition(HardwareZeroTurn.ballBlockerDown);
     }
 
     @Override
@@ -47,16 +47,16 @@ public class ZeroTurnTele extends IterativeOpMode7582{
                     hardware.leftDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE));
                     hardware.rightDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE));
                 } else {
-                    hardware.leftDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 2);
-                    hardware.rightDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 2);
+                    hardware.leftDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 3);
+                    hardware.rightDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 3);
                 }
             } else {
                 if ((-gamepad1.left_stick_y > 0 && -gamepad1.right_stick_y < 0) || (-gamepad1.left_stick_y < 0 && -gamepad1.right_stick_y > 0)) {
                     hardware.leftDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE));
                     hardware.rightDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE));
                 } else {
-                    hardware.leftDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 2);
-                    hardware.rightDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 2);
+                    hardware.leftDrive.setPower(multiplier * Functions.map(-gamepad1.left_stick_y, Functions.Algorithms.COSINE) / 3);
+                    hardware.rightDrive.setPower(multiplier * -Functions.map(-gamepad1.right_stick_y, Functions.Algorithms.COSINE) / 3);
                 }
             }
 

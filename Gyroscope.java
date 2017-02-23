@@ -14,7 +14,7 @@ public class Gyroscope {
     private double raw;
     private double velocity;
 
-    private final float maxDPS = 995;
+    public static final float maxDPS = 1010;
 
     public Gyroscope(HardwareZeroTurn hardware){this.hardware = hardware;}
 
@@ -35,7 +35,7 @@ public class Gyroscope {
             while (runtime.milliseconds() - time < 20);
         }
         bias /= 50.0;
-        deadband = (maxValue) - (minValue);
+        deadband = maxValue - minValue;
     }
 
     public void update(){

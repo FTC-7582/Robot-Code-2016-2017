@@ -20,6 +20,7 @@ public class HardwareZeroTurn {
 
     //Defining Constants
     public static final boolean ENCODERS = true, NO_ENCODERS = false;
+    public static final float ballBlockerDown = 0.25f;
 
     //Declaring the variables
     public final DcMotor leftDrive, rightDrive;
