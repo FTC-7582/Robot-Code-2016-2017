@@ -1,19 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
 
-
+@Disabled
 @Autonomous(name="Gyro Turn Test Linear", group = "debug")
 
 public class GyroTurnTestLinear extends LinearOpMode7582{
-
-    CompReading compass = new CompReading(this);
-    //AccelReading accel = new AccelReading(this);
 
     GyroSensor gyro;
     private double zeroOffset;

@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name="Testing", group="2")
+@Disabled
+@Autonomous(name="Testing", group="debug")
 public class Testing extends ZTAutonomous {
     @Override
     public void run() {

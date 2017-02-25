@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Functions;
 
-@Autonomous(name="RA",group="2")
+@Autonomous(name="RA",group="main")
 public class RedFull extends ZTAutonomous{
 
     @Override

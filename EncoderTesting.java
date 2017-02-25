@@ -1,22 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 
-
+@Disabled
 @Autonomous(name="Encoder Testing", group = "debug")
 public class EncoderTesting extends IterativeOpMode7582{
-
-    CompReading compass = new CompReading(this);
 
     @Override
     public void init() {
         super.init();
         hardware.ballBlocker.setPosition(0.175);
         hardware.color.enableLed(false);
-        compass.init();
         hardware.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Functions.wait(this, 0.1);

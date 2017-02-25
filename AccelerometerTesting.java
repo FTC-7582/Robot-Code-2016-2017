@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.AccelReading;
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 
-/**
- * Created by 970098955 on 2/7/2017.
- */
-
+@Disabled
 @Autonomous(name="Accelerometer", group = "debug")
 public class AccelerometerTesting extends IterativeOpMode7582 {
     AccelReading accel = new AccelReading(this);

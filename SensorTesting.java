@@ -1,18 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.optemplates.IterativeOpMode7582;
 
-
+@Disabled
 @Autonomous(name="Sensor Testing", group = "debug")
 public class SensorTesting extends IterativeOpMode7582{
-
-    CompReading compass = new CompReading(this);
-    //AccelReading accel = new AccelReading(this);
 
     GyroSensor gyro;
     private double zeroOffset;

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Functions;
 // The text between the quotation marks is the name that will show up on the phone. It will
 //     need to be different in every program
 //Don't worry about group for now.
-@Autonomous(name="BA",group="2")
+@Autonomous(name="BA",group="main")
 // RedFull is the name of this file in the code. You wll need to change this. Call the
 //     mirror BlueFull, and come up with your own for the other program
 public class BlueFull extends ZTAutonomous {

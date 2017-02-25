@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Functions;
 
-@Autonomous(name="Square", group="2")
+@Disabled
+@Autonomous(name="Square", group="debug")
 public class Square extends ZTAutonomous {
 
     @Override
