@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class Testing extends ZTAutonomous {
     @Override
     public void run() {
-        turn(360*5, 0.2);
-        delay(1000);
+        //turn(360*5, 0.2);
+        //delay(1000);
         double[] t = turn(-360*5, 0.2);
 
         while (opModeIsActive()) {

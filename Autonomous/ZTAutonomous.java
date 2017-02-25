@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Functions;
@@ -19,15 +20,15 @@ public class ZTAutonomous extends LinearOpMode7582 {
     public void runOpMode() {
         super.runOpMode();
         initialize();
-        while (!opModeIsActive() && !isStopRequested());
-        run();
+        waitForStart();
+        if (opModeIsActive()) run();
     }
 
     public void run(){}
 
     public void initialize(){
         super.runOpMode();
-        gyro = new Gyroscope(hardware);
+        gyro = new Gyroscope(this);
         gyro.calibrate();
         hardware.ballBlocker.setPosition(0.185);
         hardware.buttonPusher.setPosition(0.5);
@@ -67,6 +68,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
         return driveRotations(distance/divisor, speed);
     }
 
+    //--------------------------PROBLEMATIC SECTION
     private int driveRotations(double rotations, double speed){
         gyro.update();
         DcMotor.RunMode lrm = hardware.leftDrive.getMode();
@@ -94,12 +96,19 @@ public class ZTAutonomous extends LinearOpMode7582 {
         hardware.rightDrive.setPower(speed);
         hardware.leftDrive.setPower(speed);
 
+        DbgLog.msg("7582 Debug: Before Loop");
+
         while (opModeIsActive()){
             if (!hardware.leftDrive.isBusy()) hardware.leftDrive.setPower(0);
             if (!hardware.rightDrive.isBusy()) hardware.rightDrive.setPower(0);
-            if (hardware.leftDrive.getPower() == 0 && hardware.rightDrive.getPower() == 0) break;
+            if (hardware.leftDrive.getPower() == 0 && hardware.rightDrive.getPower() == 0){
+                hardware.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                hardware.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                break;
+            }
             gyro.update();
             updateTelemetry(new Object[][] {
+                    {"OpMode is active", opModeIsActive()},
                     {"Target left, right", targets[0] + ", " + targets[1]},
                     {"Current left, right", hardware.leftDrive.getCurrentPosition() + ", " + hardware.rightDrive.getCurrentPosition()},
                     {"Power left, right", hardware.leftDrive.getPower() + ", " + hardware.rightDrive.getPower()}
@@ -107,14 +116,17 @@ public class ZTAutonomous extends LinearOpMode7582 {
             idle();
         }
 
+        DbgLog.msg("7582 Debug: After Loop");
+
         hardware.leftDrive.setPower(0);
         hardware.rightDrive.setPower(0);
 
-        hardware.leftDrive.setMode(lrm);
-        hardware.rightDrive.setMode(rrm);
+        if (opModeIsActive()) hardware.leftDrive.setMode(lrm);
+        if (opModeIsActive()) hardware.rightDrive.setMode(rrm);
 
         return 0;
     }
+    //---------------------------END OF PROBLEMATIC SECTION
 
     double[] turn(double degrees, double speed){
         //gyro.calibrate();
@@ -146,12 +158,13 @@ public class ZTAutonomous extends LinearOpMode7582 {
                     }
             }
         } else if (degrees < 0){
-
+            target = ((target - init) * 1.02) + init;
             hardware.rightDrive.setPower(-speed);
             hardware.leftDrive.setPower(-speed);
             while (gyro.getHeading() > target && opModeIsActive()){
                 gyro.update();
                 updateTelemetry(new Object[][] {
+                        {"OpMode is active", opModeIsActive()},
                         {"Target", target},
                         {"Current", gyro.getHeading()},
                         {"Velocity", gyro.getVelocity()},
@@ -171,19 +184,23 @@ public class ZTAutonomous extends LinearOpMode7582 {
         hardware.rightDrive.setPower(0);
         hardware.leftDrive.setPower(0);
 // continue to integrate gyro for .25 seconds after turn stop to capture overshoot
-        double time = runtime.milliseconds();
-        while (runtime.milliseconds() - time < 250) {
-            gyro.update();
-        }
+        if (opModeIsActive()) {
+            double time = runtime.milliseconds();
+            while (runtime.milliseconds() - time < 250) {
+                gyro.update();
+            }
 
-        updateTelemetry(new Object[][] {{"Target", target},
-                {"Current", gyro.getHeading()},
-                {"Velocity", gyro.getVelocity()},
-                {"Dtime", gyro.getDeltaTime()},
-                {"Deadband", gyro.getDeadband()}} , false);
+            updateTelemetry(new Object[][]{
+                    {"OpMode is active", opModeIsActive()},
+                    {"Target", target},
+                    {"Current", gyro.getHeading()},
+                    {"Velocity", gyro.getVelocity()},
+                    {"Dtime", gyro.getDeltaTime()},
+                    {"Deadband", gyro.getDeadband()}}, false);
 // If target is missed by more than 3 degrees, adjustment is made at minimum power 3%.
-        if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3){
-            turn(target-gyro.getHeading(), .03);
+            if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3) {
+                turn(target - gyro.getHeading(), .03);
+            }
         }
 
         return new double[] {init, target};

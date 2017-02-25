@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.optemplates.LinearOpMode7582;
+
 public class Gyroscope {
+    LinearOpMode7582 mode;
     private final HardwareZeroTurn hardware;
     ElapsedTime runtime = new ElapsedTime();
 
@@ -16,7 +19,10 @@ public class Gyroscope {
 
     public static final float maxDPS = 1010;
 
-    public Gyroscope(HardwareZeroTurn hardware){this.hardware = hardware;}
+    public Gyroscope(LinearOpMode7582 opMode){
+        this.mode = opMode;
+        this.hardware = opMode.hardware;
+    }
 
     public void calibrate(){
         heading = raw = 0;
@@ -27,12 +33,13 @@ public class Gyroscope {
 
         for (int i = 0; i < 50; i++)
         {
+            if (!mode.opModeIsActive()) return;
             value = hardware.gyro.getRotationFraction();
             bias += value;
             if (value < minValue) minValue = value;
             if (value > maxValue) maxValue = value;
             double time = runtime.milliseconds();
-            while (runtime.milliseconds() - time < 20);
+            while (runtime.milliseconds() - time < 20 && mode.opModeIsActive()) mode.idle();
         }
         bias /= 50.0;
         deadband = maxValue - minValue;
@@ -47,7 +54,7 @@ public class Gyroscope {
         heading += velocity * maxDPS * (deltaTime/1000.0);
         lastTime = currTime;
         double time = runtime.milliseconds();
-        while (runtime.milliseconds() - time < 5);
+        while (runtime.milliseconds() - time < 5 && mode.opModeIsActive()) mode.idle();
     }
 
     public double getHeading(){return heading;}
