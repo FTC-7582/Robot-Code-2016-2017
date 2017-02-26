@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Functions;
 
-@Autonomous(name="RA",group="main")
+@Disabled
+@Autonomous(name="Red Stock",group="main")
 public class RedFull extends ZTAutonomous{
 
     @Override

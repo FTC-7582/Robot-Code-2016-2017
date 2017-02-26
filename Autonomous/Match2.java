@@ -1,8 +1,3 @@
-// This is a comment. The phone will not try to run this line
-//Or this one.
-// Or anything on a given line after "//"
-
-//Don't worry about these three lines. They are unimportant for your job
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -10,15 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Functions;
 
-// This defines this OpMode as an autonomous op mode.
-// The text between the quotation marks is the name that will show up on the phone. It will
-//     need to be different in every program
-//Don't worry about group for now.
+//Blue
 @Disabled
-@Autonomous(name="Blue Stock",group="main")
-// RedFull is the name of this file in the code. You wll need to change this. Call the
-//     mirror BlueFull, and come up with your own for the other program
-public class BlueFull extends ZTAutonomous {
+@Autonomous(name="Match 2", group="main")
+public class Match2 extends ZTAutonomous {
 
     @Override
     public void run() {

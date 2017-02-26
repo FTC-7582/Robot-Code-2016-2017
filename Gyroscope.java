@@ -33,13 +33,13 @@ public class Gyroscope {
 
         for (int i = 0; i < 50; i++)
         {
-            if (!mode.opModeIsActive()) return;
+            if (mode.isStopRequested()) return;
             value = hardware.gyro.getRotationFraction();
             bias += value;
             if (value < minValue) minValue = value;
             if (value > maxValue) maxValue = value;
             double time = runtime.milliseconds();
-            while (runtime.milliseconds() - time < 20 && mode.opModeIsActive()) mode.idle();
+            while (runtime.milliseconds() - time < 20 && !mode.isStopRequested());
         }
         bias /= 50.0;
         deadband = maxValue - minValue;
@@ -54,7 +54,7 @@ public class Gyroscope {
         heading += velocity * maxDPS * (deltaTime/1000.0);
         lastTime = currTime;
         double time = runtime.milliseconds();
-        while (runtime.milliseconds() - time < 5 && mode.opModeIsActive()) mode.idle();
+        while (runtime.milliseconds() - time < 5 && !mode.isStopRequested());
     }
 
     public double getHeading(){return heading;}

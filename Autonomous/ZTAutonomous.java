@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Functions;
@@ -20,7 +19,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
     public void runOpMode() {
         super.runOpMode();
         initialize();
-        waitForStart();
+        while (!opModeIsActive() && !isStopRequested());
         if (opModeIsActive()) run();
     }
 
@@ -68,7 +67,6 @@ public class ZTAutonomous extends LinearOpMode7582 {
         return driveRotations(distance/divisor, speed);
     }
 
-    //--------------------------PROBLEMATIC SECTION
     private int driveRotations(double rotations, double speed){
         gyro.update();
         DcMotor.RunMode lrm = hardware.leftDrive.getMode();
@@ -96,19 +94,12 @@ public class ZTAutonomous extends LinearOpMode7582 {
         hardware.rightDrive.setPower(speed);
         hardware.leftDrive.setPower(speed);
 
-        DbgLog.msg("7582 Debug: Before Loop");
-
         while (opModeIsActive()){
             if (!hardware.leftDrive.isBusy()) hardware.leftDrive.setPower(0);
             if (!hardware.rightDrive.isBusy()) hardware.rightDrive.setPower(0);
-            if (hardware.leftDrive.getPower() == 0 && hardware.rightDrive.getPower() == 0){
-                hardware.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                hardware.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                break;
-            }
+            if (hardware.leftDrive.getPower() == 0 && hardware.rightDrive.getPower() == 0) break;
             gyro.update();
             updateTelemetry(new Object[][] {
-                    {"OpMode is active", opModeIsActive()},
                     {"Target left, right", targets[0] + ", " + targets[1]},
                     {"Current left, right", hardware.leftDrive.getCurrentPosition() + ", " + hardware.rightDrive.getCurrentPosition()},
                     {"Power left, right", hardware.leftDrive.getPower() + ", " + hardware.rightDrive.getPower()}
@@ -116,17 +107,14 @@ public class ZTAutonomous extends LinearOpMode7582 {
             idle();
         }
 
-        DbgLog.msg("7582 Debug: After Loop");
-
         hardware.leftDrive.setPower(0);
         hardware.rightDrive.setPower(0);
 
-        if (opModeIsActive()) hardware.leftDrive.setMode(lrm);
-        if (opModeIsActive()) hardware.rightDrive.setMode(rrm);
+        hardware.leftDrive.setMode(lrm);
+        hardware.rightDrive.setMode(rrm);
 
         return 0;
     }
-    //---------------------------END OF PROBLEMATIC SECTION
 
     double[] turn(double degrees, double speed){
         //gyro.calibrate();
@@ -146,9 +134,12 @@ public class ZTAutonomous extends LinearOpMode7582 {
                 updateTelemetry(new Object[][] {
                         {"Target", target},
                         {"Current", gyro.getHeading()},
+                        {"Init", init},
                         {"Velocity", gyro.getVelocity()},
                         {"Dtime", gyro.getDeltaTime()},
-                        {"Deadband", gyro.getDeadband()}} , false);
+                        {"Deadband", gyro.getDeadband()},
+                        {"Bias", gyro.getBias()}
+                } , false);
 // When turn gets within 45 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
                     if (target - gyro.getHeading() < 45) {
                         double newspeed = speed * (target - gyro.getHeading()) / 45;
@@ -158,22 +149,23 @@ public class ZTAutonomous extends LinearOpMode7582 {
                     }
             }
         } else if (degrees < 0){
-            target = ((target - init) * 1.02) + init;
             hardware.rightDrive.setPower(-speed);
             hardware.leftDrive.setPower(-speed);
             while (gyro.getHeading() > target && opModeIsActive()){
                 gyro.update();
                 updateTelemetry(new Object[][] {
-                        {"OpMode is active", opModeIsActive()},
                         {"Target", target},
                         {"Current", gyro.getHeading()},
+                        {"Init", init},
                         {"Velocity", gyro.getVelocity()},
                         {"Dtime", gyro.getDeltaTime()},
-                        {"Deadband", gyro.getDeadband()}} , false);
+                        {"Deadband", gyro.getDeadband()},
+                        {"Bias", gyro.getBias()}
+                } , false);
 // When turn gets within 45 degrees start reducing speed to reduce overshoot; minimum speed is 3% of power
                 if (gyro.getHeading()- target < 45) {
                     double newspeed = -speed * (gyro.getHeading()- target) / 45 ;
-                    if (Math.abs(newspeed) < .03) {newspeed = -.03;} ;
+                    if (Math.abs(newspeed) < .03) {newspeed = -.03;}
                     hardware.rightDrive.setPower(newspeed) ;
                     hardware.leftDrive.setPower(newspeed);
                 }
@@ -184,23 +176,18 @@ public class ZTAutonomous extends LinearOpMode7582 {
         hardware.rightDrive.setPower(0);
         hardware.leftDrive.setPower(0);
 // continue to integrate gyro for .25 seconds after turn stop to capture overshoot
-        if (opModeIsActive()) {
-            double time = runtime.milliseconds();
-            while (runtime.milliseconds() - time < 250) {
-                gyro.update();
-            }
-
-            updateTelemetry(new Object[][]{
-                    {"OpMode is active", opModeIsActive()},
-                    {"Target", target},
-                    {"Current", gyro.getHeading()},
-                    {"Velocity", gyro.getVelocity()},
-                    {"Dtime", gyro.getDeltaTime()},
-                    {"Deadband", gyro.getDeadband()}}, false);
+        double time = runtime.milliseconds();
+        while (runtime.milliseconds() - time < 250) {
+            gyro.update();
+        }
+        updateTelemetry(new Object[][] {{"Target", target},
+                {"Current", gyro.getHeading()},
+                {"Velocity", gyro.getVelocity()},
+                {"Dtime", gyro.getDeltaTime()},
+                {"Deadband", gyro.getDeadband()}} , false);
 // If target is missed by more than 3 degrees, adjustment is made at minimum power 3%.
-            if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3) {
-                turn(target - gyro.getHeading(), .03);
-            }
+        if (gyro.getHeading() > target + 3 || gyro.getHeading() < target - 3){
+            turn(target-gyro.getHeading(), .03);
         }
 
         return new double[] {init, target};
@@ -217,7 +204,7 @@ public class ZTAutonomous extends LinearOpMode7582 {
             hardware.collector.setPower(Functions.clampMax(hardware.collector.getPower() + 0.05, 1));
 
         hardware.ballBlocker.setPosition(0.5);
-        delay(1000);
+        delay(500);
         hardware.ballBlocker.setPosition(HardwareZeroTurn.ballBlockerDown);
         while (hardware.collector.getPower() > -1)
             hardware.collector.setPower(Functions.clampMin(hardware.collector.getPower() - 0.05, -1));
